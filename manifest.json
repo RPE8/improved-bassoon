@@ -1,0 +1,141 @@
+{
+	"_version": "1.5.0",
+	"sap.app": {
+		"id": "improved.bassoon",
+		"type": "application",
+		"i18n": "i18n/i18n.properties",
+		"applicationVersion": {
+			"version": "1.0.5"
+		},
+		"title": "{{appTitle}}",
+		"description": "{{appDescription}}",
+		"dataSources": {
+			"mainService": {
+				"uri": "/sap/opu/odata/sap/ZDPP_SRV",
+				"type": "OData",
+				"settings": {
+					"odataVersion": "2.0",
+					"metadataUrlParams": {
+						"sap-documentation": "heading"
+					},
+					"json": true,
+					"headers": {
+						"X-CSRF-Token": "Fetch"
+					},
+					"defaultBindingMode": "TwoWay",
+					"defaultCountMode": "Inline",
+					"refreshAfterChange": false
+				}
+			}
+		},
+		"crossNavigation": {
+			"inbounds": {
+				"detail": {
+					"signature": {
+						"parameters": {},
+						"additionalParameters": "allowed"
+					},
+					"semanticObject": "improved_bassoon",
+					"action": "display"
+				}
+			}
+		}
+	},
+	"sap.ui": {
+		"technology": "UI5",
+		"fullWidth": true,
+		"icons": {
+			"icon": "",
+			"favIcon": "",
+			"phone": "",
+			"phone@2": "",
+			"tablet": "",
+			"tablet@2": ""
+		},
+		"deviceTypes": {
+			"desktop": true,
+			"tablet": true,
+			"phone": true
+		},
+		"supportedThemes": [
+			"sap_hcb",
+			"sap_bluecrystal"
+		]
+	},
+
+	"sap.ui5": {
+		"rootView": {
+			"viewName": "improved.bassoon.view.App",
+			"type": "XML"
+		},
+		"dependencies": {
+			"minUI5Version": "1.71.16",
+			"libs": {
+				"sap.ui.core": {},
+				"sap.m": {},
+				"sap.ui.unified": {},
+				"sap.ui.table": {},
+				"sap.ui.layout": {},
+				"sap.ushell": {}
+			}
+		},
+		"contentDensities": {
+			"compact": true,
+			"cozy": false
+		},
+		"models": {
+			"i18n": {
+				"type": "sap.ui.model.resource.ResourceModel",
+				"settings": {
+					"bundleName": "improved.bassoon.i18n.i18n"
+				}
+			},
+			"": {
+				"dataSource": "mainService",
+				"preload": true,
+				"settings": {
+					"metadataUrlParams": {
+						"sap-documentation": "heading"
+					},
+					"json": true,
+					"headers": {
+						"X-CSRF-Token": "Fetch"
+					},
+					"defaultBindingMode": "TwoWay",
+					"defaultCountMode": "Inline",
+					"refreshAfterChange": false
+				}
+			}
+		},
+		"resources": {
+			"css": [{
+				"uri": "./css/style.css"
+			}]
+		},
+		"routing": {
+			"config": {
+				"routerClass": "sap.m.routing.Router",
+				"viewType": "XML",
+				"async": true,
+				"viewPath": "improved.bassoon.view",
+				"controlAggregation": "pages",
+				"controlId": "app",
+				"clearControlAggregation": false
+			},
+			"routes": [
+				{
+					"pattern": "",
+					"name": "Default",
+					"target": "Tracker"
+				}
+			],
+			"targets": {
+				"Tracker": {
+					"viewType": "XML",
+					"transition": "slide",
+					"viewName": "App"
+				}
+			}
+		}
+	}
+}
