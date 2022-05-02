@@ -1,12 +1,9 @@
 <mvc:View
 		controllerName="improved.bassoon.view.App"
 		xmlns="sap.m"
-		xmlns:t="improved.bassoon.components.Table"
+		
 		xmlns:mvc="sap.ui.core.mvc">
 	<App 
 			id="app">
-		<Page>
-			<t:Table />
-		</Page>
 	</App>		
 </mvc:View>

@@ -133,7 +133,7 @@
 				"Tracker": {
 					"viewType": "XML",
 					"transition": "slide",
-					"viewName": "App"
+					"viewName": "Content"
 				}
 			}
 		}
