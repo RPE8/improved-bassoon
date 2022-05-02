@@ -87,7 +87,6 @@ sap.ui.define([
 
             const iLength = aRowTds.length;
             for (let j = 0; j < iLength; j++) {
-              console.time("width");
               if (iLastTdIndex === null) {
                 if (this.iTableBodyScrollContainerWidth < iBorderWidth) {
                   iLastTdIndex = j;
@@ -98,7 +97,6 @@ sap.ui.define([
               } else if (iLastTdIndex === j) {
                 break;
               }
-              console.timeEnd("width");
 
               const iRow = +aRowTds[j].getAttribute("data-row");
               const iColumn = +aRowTds[j].getAttribute("data-column");
@@ -131,7 +129,6 @@ sap.ui.define([
 
             const iLength = aRowTds.length;
             for (let j = 0; j < iLength; j++) {
-              console.time("width");
               if (iLastTdIndex === null) {
                 if (this.iTableBodyScrollContainerWidth < iBorderWidth) {
                   iLastTdIndex = j;
@@ -142,7 +139,6 @@ sap.ui.define([
               } else if (iLastTdIndex === j) {
                 break;
               }
-              console.timeEnd("width");
 
               const iRow = +aRowTds[j].getAttribute("data-row");
               const iColumn = +aRowTds[j].getAttribute("data-column");
