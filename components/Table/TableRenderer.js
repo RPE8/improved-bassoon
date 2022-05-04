@@ -1,6 +1,6 @@
 
-sap.ui.define(["sap/ui/core/Renderer"],
-  function (Renderer) {
+sap.ui.define(["sap/ui/core/Renderer", "./TableCell"],
+  function (Renderer, TableCell) {
     "use strict";
 
     const oRenderer = {};
@@ -9,9 +9,12 @@ sap.ui.define(["sap/ui/core/Renderer"],
       rm.write("<div id='TABLE'></div>");
     };
 
-    oRenderer.renderTable = (oControl, oObserver, {
-      onWheel
-    }) => {
+    oRenderer.renderTable = (mParameters) => {
+      const oObserver = mParameters.oIntObserver;
+      const oIdGenerator = mParameters.oIdGenerator;
+      const oControl = mParameters.oContext;
+      const onWheel = mParameters.onWheel;
+
       const $TableContainer = document.getElementById("TABLE");
 
       const $TableHeaderContainer = document.createElement('div');
@@ -49,28 +52,42 @@ sap.ui.define(["sap/ui/core/Renderer"],
         $TableHeader.appendChild(tr);
       };
 
-      const aTrs = [];
-      const aTds = [];
       const aTableData = oControl.getData();
       const iRows = oControl.getVisibleRows();
+      const aRows = [];
+      const mTdsById = new Map();
       for (let i = 0; i < iRows; i++) {
         const aData = aTableData[i];
         const tr = document.createElement('tr');
         tr.setAttribute("data-row", i);
         const aRow = [];
         aData.forEach((sData, j) => {
+          const sId = oIdGenerator.next().value;
           const td = document.createElement('td');
-          td.setAttribute("data-row", i);
-          td.setAttribute("width", 42);
-          td.setAttribute("data-column", j);
+          td.setAttribute("id", sId);
+
           oObserver.observe(td);
+          // td.innerHTML = sData;
           // td.innerHTML = `<input style='width:${20}px;' value='HEADER ${sData}'>`;
           tr.appendChild(td);
-          aRow.push(td);
+
+          const oCell = new TableCell(td, tr, {
+            sId: sId,
+            // Values is hardcoded
+            iWidth: 42,
+            sWidthUnit: "px",
+            iColumn: j,
+            iRow: i,
+            tBodyRef: $TableBody,
+            scrollContainerRef: $TableBodyScrollContainer,
+            vValue: sData
+          });
+
+          mTdsById.set(sId, oCell);
+          aRow.push(oCell);
         });
-        aTds.push(aRow);
-        aTrs.push(tr);
         $TBody.appendChild(tr);
+        aRows.push(aRow);
       }
 
       $TableBody.appendChild($TBody);
@@ -93,8 +110,8 @@ sap.ui.define(["sap/ui/core/Renderer"],
       return {
         $TBody: $TBody,
         $TableBodyScrollContainer,
-        aTrs,
-        aTds
+        aRows,
+        mTdsById
       }
     }
 

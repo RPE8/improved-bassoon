@@ -4,7 +4,6 @@ sap.ui.define([
 ], function (Control, TableRenderer) {
   return Control.extend("Table", {
     init: function () {
-      console.info("init");
       this.iRows = 70;
       this.iColumns = 400;
       this.iColumnHeaderRows = 5;
@@ -16,20 +15,27 @@ sap.ui.define([
       this.oIntersectionObserver = new IntersectionObserver((entries) => {
         entries.forEach((entry) => {
           const target = entry.target;
-          const iRow = +target.getAttribute("data-row");
-          const iColumn = +target.getAttribute("data-column");
-
+          const sId = target.getAttribute("id");
+          const oCell = this.mTdsById.get(sId);
+          const iRow = oCell.getRow();
+          const iColumn = oCell.getColumn();
           const iDataRow = this.oDataRowToTableRow[iRow];
           const sValue = String(this.aData[iDataRow][iColumn]);
 
-          if (target.innerHTML !== sValue) {
-            target.innerHTML = sValue;
+          if (oCell.getDisplayedValue() !== sValue) {
+            oCell.setDisplayedValue(sValue, true);
           }
         });
       });
-      this.aTds = [];
-      this.aTrs = [];
+      this.aRows = [];
+      this.mTdsById = new Map();
       this.aData = this.createData();
+      this.oIdGenerator = (function* idMaker() {
+        let index = 0;
+        while (true)
+          yield `Table1-${index++}`;
+      })();
+
     },
 
     getHeaderRowsCount() {
@@ -82,29 +88,33 @@ sap.ui.define([
           let iLastTdIndex = null;
 
           for (let i = 0; i < this.iVisibleRowsCount; i++) {
-            const aRowTds = this.aTds[i];
+            const aRowTds = this.aRows[i];
 
 
             const iLength = aRowTds.length;
             for (let j = 0; j < iLength; j++) {
+              const oTd = aRowTds[j];
+
               if (iLastTdIndex === null) {
                 if (this.iTableBodyScrollContainerWidth < iBorderWidth) {
                   iLastTdIndex = j;
                   break;
                 }
 
-                iBorderWidth += +aRowTds[j].getAttribute("width");
+                iBorderWidth += oTd.getWidth();
               } else if (iLastTdIndex === j) {
                 break;
               }
 
-              const iRow = +aRowTds[j].getAttribute("data-row");
-              const iColumn = +aRowTds[j].getAttribute("data-column");
+              const iRow = oTd.getRow();
+              const iColumn = oTd.getColumn();
 
               const iDataRow = this.oDataRowToTableRow[iRow];
               const sValue = this.aData[iDataRow][iColumn];
 
-              aRowTds[j].innerHTML = sValue;
+              if (oTd.getDisplayedValue() !== sValue) {
+                oTd.setDisplayedValue(sValue, true);
+              }
             }
           }
         } else if (oEvent.deltaY > 0) {
@@ -125,39 +135,42 @@ sap.ui.define([
           let iLastTdIndex = null;
           for (let i = 0; i < this.iVisibleRowsCount; i++) {
             console.time("row");
-            const aRowTds = this.aTds[i];
+            const aRowTds = this.aRows[i];
 
             const iLength = aRowTds.length;
             for (let j = 0; j < iLength; j++) {
+              const oTd = aRowTds[j];
+
               if (iLastTdIndex === null) {
                 if (this.iTableBodyScrollContainerWidth < iBorderWidth) {
                   iLastTdIndex = j;
                   break;
                 }
 
-                iBorderWidth += +aRowTds[j].getAttribute("width");
+                iBorderWidth += oTd.getWidth();
               } else if (iLastTdIndex === j) {
                 break;
               }
 
-              const iRow = +aRowTds[j].getAttribute("data-row");
-              const iColumn = +aRowTds[j].getAttribute("data-column");
+              const iRow = oTd.getRow();
+              const iColumn = oTd.getColumn();
 
               const iDataRow = this.oDataRowToTableRow[iRow];
               const sValue = this.aData[iDataRow][iColumn];
-              // console.log(aRowTds[j].clientWidth);
-              aRowTds[j].innerHTML = sValue;
+
+              if (oTd.getDisplayedValue() !== sValue) {
+                oTd.setDisplayedValue(sValue, true);
+              }
             }
             console.timeEnd("row");
           }
         }
       };
 
-
-
-      // aTds
-
-      const { aTds, aTrs, $TableBodyScrollContainer } = TableRenderer.renderTable(this, this.oIntersectionObserver, {
+      const { aRows, mTdsById, $TableBodyScrollContainer } = TableRenderer.renderTable({
+        oContext: this,
+        oIntObserver: this.oIntersectionObserver,
+        oIdGenerator: this.oIdGenerator,
         onWheel: onWheelHandler
       });
 
@@ -167,8 +180,13 @@ sap.ui.define([
 
       this.$TableBodyScrollContainer = $TableBodyScrollContainer;
       this.iTableBodyScrollContainerWidth = $TableBodyScrollContainer.clientWidth;
-      this.aTds = aTds;
-      this.aTrs = aTrs;
+      this.aRows = aRows;
+      this.mTdsById = mTdsById;
+      console.log(this.mTdsById)
+      console.log(this.aRows)
+      console.log(this.oIdGenerator.next().value)
+      console.log(this.oIdGenerator.next().value)
+
     },
 
     isInViewport: (el) => {
