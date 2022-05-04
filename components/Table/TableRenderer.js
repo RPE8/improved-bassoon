@@ -1,6 +1,6 @@
 
-sap.ui.define(["sap/ui/core/Renderer", "./TableBodyCell", "./TableHeaderCell"],
-  function (Renderer, TableBodyCell, TableHeaderCell) {
+sap.ui.define(["sap/ui/core/Renderer", "./TableBodyCell", "./TableHeaderCell", "./TableRow"],
+  function (Renderer, TableBodyCell, TableHeaderCell, TableRow) {
     "use strict";
 
     const oRenderer = {};
@@ -48,7 +48,7 @@ sap.ui.define(["sap/ui/core/Renderer", "./TableBodyCell", "./TableHeaderCell"],
 
       for (let i = 0; i < iHeaders; i++) {
         const tr = document.createElement('tr');
-
+        const aTds = [];
         for (let j = 0; j < iColumns; j++) {
           const sId = oIdGenerator.next().value;
           const td = document.createElement('td');
@@ -70,8 +70,14 @@ sap.ui.define(["sap/ui/core/Renderer", "./TableBodyCell", "./TableHeaderCell"],
           });
 
           mHeaderTdsById.set(sId, oCell);
-          aHeaderRows.push(oCell);
         }
+        aHeaderRows.push(new TableRow({
+          sId: oIdGenerator.next().value,
+          element: tr,
+          aTds,
+          tBody: $TableHeaderBody,
+          iRow: i
+        }))
         $TableHeaderBody.appendChild(tr);
       };
 
@@ -84,6 +90,7 @@ sap.ui.define(["sap/ui/core/Renderer", "./TableBodyCell", "./TableHeaderCell"],
         const tr = document.createElement('tr');
         tr.setAttribute("data-row", i);
         const aRow = [];
+        const aTds = [];
         aData.forEach((sData, j) => {
           const sId = oIdGenerator.next().value;
           const td = document.createElement('td');
@@ -109,8 +116,15 @@ sap.ui.define(["sap/ui/core/Renderer", "./TableBodyCell", "./TableHeaderCell"],
           });
 
           mTdsById.set(sId, oCell);
-          aRow.push(oCell);
+          aTds.push(oCell);
         });
+        aHeaderRows.push(new TableRow({
+          sId: oIdGenerator.next().value,
+          element: tr,
+          aTds,
+          tBody: $TableBody,
+          iRow: i
+        }));
         $TBody.appendChild(tr);
         aRows.push(aRow);
       }
