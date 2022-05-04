@@ -5,129 +5,49 @@ sap.ui.define(["sap/ui/core/Renderer", "./TableBodyCell", "./TableHeaderCell", "
 
     const oRenderer = {};
 
-    oRenderer.render = (rm, oControl) => {
+    oRenderer.render = function (rm) {
       rm.write("<div id='TABLE'></div>");
     };
 
-    oRenderer.renderTable = (mParameters) => {
-      const oObserver = mParameters.oIntObserver;
-      const oIdGenerator = mParameters.oIdGenerator;
-      const oControl = mParameters.oContext;
-      const onWheel = mParameters.onWheel;
+    oRenderer.renderColumns = function (element, aColumn) {
+      const aColumns = [];
+    };
 
+    oRenderer.createElement = function (sTag, sClass, aAttributes = []) {
+      const element = document.createElement(sTag);
+
+      if (sClass && sClass.length) {
+        const aClasses = sClass.split(" ");
+
+        aClasses.forEach(sClass => element.classList.add(sClass));
+      }
+
+      aAttributes.forEach((aAttribute) => {
+        element.setAttribute(aAttribute[0], aAttribute[1]);
+      });
+
+      return element;
+    };
+
+    oRender.renderTableRows = function (aRows) {
+
+    };
+
+    oRenderer.renderTable = function (mParameters) {
       const $TableContainer = document.getElementById("TABLE");
 
-      const $TableHeaderContainer = document.createElement('div');
-      $TableHeaderContainer.className = "tableHeaderWrapper";
-      const $TableHeader = document.createElement('table');
-      $TableHeader.className = "tableHeader";
-      const $TableHeaderBody = document.createElement('tbody');
-      $TableHeaderBody.className = "headerTableBody tableBody"
+      const $TableHeaderContainer = this.createElement("div", "tableHeaderWrapper");
+      const $TableHeader = this.createElement("table", "tableHeader");
+      const $TableHeaderBody = this.createElement("tbody", "headerTableBody tableBody");
 
-      const $TableBodyContainer = document.createElement('div');
-      $TableBodyContainer.className = "tableBodyWrapper";
-      const $TableBodyScrollContainer = document.createElement('div');
-      $TableBodyScrollContainer.className = "tableBodyScrollWrapper";
-      const $VerticalScrollDiv = document.createElement('div');
-      $VerticalScrollDiv.className = "scroll verticalScroll";
-      const $VerticalScrollBar = document.createElement('div');
-      $VerticalScrollBar.className = "scrollBar verticalScrollBar";
-      const $HorizontalScrollDiv = document.createElement('div');
-      $HorizontalScrollDiv.className = "scroll horizontalScroll";
-      const $HorizontalScrollBar = document.createElement('div');
-      $HorizontalScrollBar.className = "scrollBar horizontalScrollBar";
-      const $TableBody = document.createElement('table');
-      $TableBody.className = "bodyTableBody tableBody";
-      const $TBody = document.createElement('tbody');
-
-      const iHeaders = oControl.getHeaderRowsCount();
-      const iColumns = oControl.getColumnsCount();
-
-      const aHeaderRows = [];
-      const mHeaderTdsById = new Map();
-
-      for (let i = 0; i < iHeaders; i++) {
-        const tr = document.createElement('tr');
-        const aTds = [];
-        for (let j = 0; j < iColumns; j++) {
-          const sId = oIdGenerator.next().value;
-          const td = document.createElement('td');
-          td.setAttribute("id", sId);
-
-          const sData = `${i}:${j}`;
-          tr.appendChild(td);
-          const oCell = new TableHeaderCell({
-            element: td,
-            rowElement: tr,
-            sId: sId,
-            // Values is hardcoded
-            iWidth: 42,
-            sWidthUnit: "px",
-            iColumn: j,
-            iRow: i,
-            tBodyRef: $TableBody,
-            vValue: sData
-          });
-
-          mHeaderTdsById.set(sId, oCell);
-        }
-        aHeaderRows.push(new TableRow({
-          sId: oIdGenerator.next().value,
-          element: tr,
-          aTds,
-          tBody: $TableHeaderBody,
-          iRow: i
-        }))
-        $TableHeaderBody.appendChild(tr);
-      };
-
-      const aTableData = oControl.getData();
-      const iRows = oControl.getVisibleRows();
-      const aRows = [];
-      const mTdsById = new Map();
-      for (let i = 0; i < iRows; i++) {
-        const aData = aTableData[i];
-        const tr = document.createElement('tr');
-        tr.setAttribute("data-row", i);
-        const aRow = [];
-        const aTds = [];
-        aData.forEach((sData, j) => {
-          const sId = oIdGenerator.next().value;
-          const td = document.createElement('td');
-          td.setAttribute("id", sId);
-
-          oObserver.observe(td);
-          // td.innerHTML = sData;
-          // td.innerHTML = `<input style='width:${20}px;' value='HEADER ${sData}'>`;
-          tr.appendChild(td);
-
-          const oCell = new TableBodyCell({
-            element: td,
-            rowElement: tr,
-            sId: sId,
-            // Values is hardcoded
-            iWidth: 42,
-            sWidthUnit: "px",
-            iColumn: j,
-            iRow: i,
-            tBodyRef: $TableBody,
-            scrollContainerRef: $TableBodyScrollContainer,
-            vValue: sData
-          });
-
-          mTdsById.set(sId, oCell);
-          aTds.push(oCell);
-        });
-        aHeaderRows.push(new TableRow({
-          sId: oIdGenerator.next().value,
-          element: tr,
-          aTds,
-          tBody: $TableBody,
-          iRow: i
-        }));
-        $TBody.appendChild(tr);
-        aRows.push(aRow);
-      }
+      const $TableBodyContainer = this.createElement("div", "tableBodyWrapper");
+      const $TableBodyScrollContainer = this.createElement("div", "tableBodyScrollWrapper");
+      const $VerticalScrollDiv = this.createElement("div", "scroll verticalScroll");
+      const $VerticalScrollBar = this.createElement("div", "scrollBar verticalScrollBar");
+      const $HorizontalScrollDiv = this.createElement("div", "scroll horizontalScroll");
+      const $HorizontalScrollBar = this.createElement("div", "scrollBar horizontalScrollBar");
+      const $TableBody = this.createElement("table", "bodyTableBody tableBody");
+      const $TBody = this.createElement("tbody");
 
       $TableBody.appendChild($TBody);
 
@@ -142,17 +62,12 @@ sap.ui.define(["sap/ui/core/Renderer", "./TableBodyCell", "./TableHeaderCell", "
       $TableBodyScrollContainer.appendChild($HorizontalScrollDiv);
       $TableBodyContainer.appendChild($TableBodyScrollContainer);
 
-
       $TableContainer.appendChild($TableBodyContainer);
-      $TableContainer.onwheel = onWheel
 
       return {
-        $TBody: $TBody,
-        $TableBodyScrollContainer,
-        aRows,
-        mTdsById,
-        mHeaderTdsById,
-        aHeaderRows
+        bodyTBody: $TBody,
+        headerTBody: $TableHeaderBody,
+        bodyScrollContainer: $TableBodyScrollContainer
       }
     }
 

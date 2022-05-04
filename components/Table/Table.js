@@ -1,9 +1,11 @@
 sap.ui.define([
   "sap/ui/core/Control",
-  "./TableRenderer"
-], function (Control, TableRenderer) {
+  "./TableRenderer",
+  "./Column"
+], function (Control, TableRenderer, Column) {
   return Control.extend("Table", {
     init: function () {
+      this.aColumns = [];
       this.iRows = 70;
       this.iColumns = 400;
       this.iColumnHeaderRows = 5;
@@ -29,14 +31,31 @@ sap.ui.define([
       });
       this.aRows = [];
       this.mTdsById = new Map();
+
       this.aData = this.createData();
-      this.oIdGenerator = (function* idMaker() {
+
+      const sTableId = "Table";
+      this.oIdRowGenerator = (function* idMaker() {
         let index = 0;
         while (true)
-          yield `Table1-${index++}`;
+          yield `${sTableId}-Row-${index++}`;
+      })();
+
+      this.oIdCellGenerator = (function* idMaker() {
+        let index = 0;
+        while (true)
+          yield `${sTableId}-Cell-${index++}`;
+      })();
+
+      this.oIdColumnsGenerator = (function* idMaker() {
+        let index = 0;
+        while (true)
+          yield `${sTableId}-Column-${index++}`;
       })();
 
     },
+
+
 
     getHeaderRowsCount() {
       return this.iColumnHeaderRows;
@@ -67,137 +86,225 @@ sap.ui.define([
 
     getData() {
       return this.aData;
+    },
+
+    onWheelHandler: function (oEvent) {
+      if (oEvent.deltaY < 0) {
+        if (this.iCurrentFirstRow <= 0) {
+          return;
+        }
+
+        this.iCurrentFirstRow--;
+        this.iCurrentLastRow--;
+
+        for (let sRowId in Object.keys(this.oDataRowToTableRow)) {
+          this.oDataRowToTableRow[sRowId] = this.oDataRowToTableRow[sRowId] - 1;
+        }
+
+        let iBorderWidth = 0;
+        let iLastTdIndex = null;
+
+        for (let i = 0; i < this.iVisibleRowsCount; i++) {
+          const aRowTds = this.aRows[i];
+
+
+          const iLength = aRowTds.length;
+          for (let j = 0; j < iLength; j++) {
+            const oTd = aRowTds[j];
+
+            if (iLastTdIndex === null) {
+              if (this.iTableBodyScrollContainerWidth < iBorderWidth) {
+                iLastTdIndex = j;
+                break;
+              }
+
+              iBorderWidth += oTd.getWidth();
+            } else if (iLastTdIndex === j) {
+              break;
+            }
+
+            const iRow = oTd.getRow();
+            const iColumn = oTd.getColumn();
+
+            const iDataRow = this.oDataRowToTableRow[iRow];
+            const sValue = this.aData[iDataRow][iColumn];
+
+            if (oTd.getDisplayedValue() !== sValue) {
+              oTd.setDisplayedValue(sValue, true);
+            }
+          }
+        }
+      } else if (oEvent.deltaY > 0) {
+        if (this.iCurrentLastRow >= this.aData.length - 1) {
+          return;
+        }
+
+        this.iCurrentFirstRow++;
+        this.iCurrentLastRow++;
+
+        for (let sRowId in Object.keys(this.oDataRowToTableRow)) {
+          this.oDataRowToTableRow[sRowId] = this.oDataRowToTableRow[sRowId] + 1;
+        }
+
+
+
+        let iBorderWidth = 0;
+        let iLastTdIndex = null;
+        for (let i = 0; i < this.iVisibleRowsCount; i++) {
+          console.time("row");
+          const aRowTds = this.aRows[i];
+
+          const iLength = aRowTds.length;
+          for (let j = 0; j < iLength; j++) {
+            const oTd = aRowTds[j];
+
+            if (iLastTdIndex === null) {
+              if (this.iTableBodyScrollContainerWidth < iBorderWidth) {
+                iLastTdIndex = j;
+                break;
+              }
+
+              iBorderWidth += oTd.getWidth();
+            } else if (iLastTdIndex === j) {
+              break;
+            }
+
+            const iRow = oTd.getRow();
+            const iColumn = oTd.getColumn();
+
+            const iDataRow = this.oDataRowToTableRow[iRow];
+            const sValue = this.aData[iDataRow][iColumn];
+
+            if (oTd.getDisplayedValue() !== sValue) {
+              oTd.setDisplayedValue(sValue, true);
+            }
+          }
+          console.timeEnd("row");
+        }
+      }
+    },
+
+    populateTableWithData: function () {
+
+      // for (let i = 0; i < iHeaders; i++) {
+      //   const tr = document.createElement('tr');
+      //   const aTds = [];
+      //   for (let j = 0; j < iColumns; j++) {
+      //     const sId = oIdGenerator.next().value;
+      //     const td = document.createElement('td');
+      //     td.setAttribute("id", sId);
+
+      //     const sData = `${i}:${j}`;
+      //     tr.appendChild(td);
+      //     const oCell = new TableHeaderCell({
+      //       element: td,
+      //       rowElement: tr,
+      //       sId: sId,
+      //       // Values is hardcoded
+      //       iWidth: 42,
+      //       sWidthUnit: "px",
+      //       iColumn: j,
+      //       iRow: i,
+      //       tBodyRef: $TableBody,
+      //       vValue: sData
+      //     });
+
+      //     mHeaderTdsById.set(sId, oCell);
+      //   }
+      //   aHeaderRows.push(new TableRow({
+      //     sId: oIdGenerator.next().value,
+      //     element: tr,
+      //     aTds,
+      //     tBody: $TableHeaderBody,
+      //     iRow: i
+      //   }))
+      //   $TableHeaderBody.appendChild(tr);
+      // };
+
+      // const aTableData = oControl.getData();
+      // const iRows = oControl.getVisibleRows();
+      // const aRows = [];
+      // const mTdsById = new Map();
+      // for (let i = 0; i < iRows; i++) {
+      //   const aData = aTableData[i];
+      //   const tr = document.createElement('tr');
+      //   tr.setAttribute("data-row", i);
+      //   const aRow = [];
+      //   const aTds = [];
+      //   aData.forEach((sData, j) => {
+      //     const sId = oIdGenerator.next().value;
+      //     const td = document.createElement('td');
+      //     td.setAttribute("id", sId);
+
+      //     oObserver.observe(td);
+      //     // td.innerHTML = sData;
+      //     // td.innerHTML = `<input style='width:${20}px;' value='HEADER ${sData}'>`;
+      //     tr.appendChild(td);
+
+      //     const oCell = new TableBodyCell({
+      //       element: td,
+      //       rowElement: tr,
+      //       sId: sId,
+      //       // Values is hardcoded
+      //       iWidth: 42,
+      //       sWidthUnit: "px",
+      //       iColumn: j,
+      //       iRow: i,
+      //       tBodyRef: $TableBody,
+      //       scrollContainerRef: $TableBodyScrollContainer,
+      //       vValue: sData
+      //     });
+
+      //     mTdsById.set(sId, oCell);
+      //     aTds.push(oCell);
+      //   });
+      //   aHeaderRows.push(new TableRow({
+      //     sId: oIdGenerator.next().value,
+      //     element: tr,
+      //     aTds,
+      //     tBody: $TableBody,
+      //     iRow: i
+      //   }));
+      //   $TBody.appendChild(tr);
+      //   aRows.push(aRow);
+      // }
+    },
+
+    createTableDataObject: function () {
+      const aData = this.aData;
+      const iColumns = this.iColumns;
+      const iVisibleRows = this.iVisibleRowsCount;
+
 
     },
 
     createTable() {
       const onWheelHandler = (oEvent) => {
-        if (oEvent.deltaY < 0) {
-          if (this.iCurrentFirstRow <= 0) {
-            return;
-          }
-
-          this.iCurrentFirstRow--;
-          this.iCurrentLastRow--;
-
-          for (let sRowId in Object.keys(this.oDataRowToTableRow)) {
-            this.oDataRowToTableRow[sRowId] = this.oDataRowToTableRow[sRowId] - 1;
-          }
-
-          let iBorderWidth = 0;
-          let iLastTdIndex = null;
-
-          for (let i = 0; i < this.iVisibleRowsCount; i++) {
-            const aRowTds = this.aRows[i];
-
-
-            const iLength = aRowTds.length;
-            for (let j = 0; j < iLength; j++) {
-              const oTd = aRowTds[j];
-
-              if (iLastTdIndex === null) {
-                if (this.iTableBodyScrollContainerWidth < iBorderWidth) {
-                  iLastTdIndex = j;
-                  break;
-                }
-
-                iBorderWidth += oTd.getWidth();
-              } else if (iLastTdIndex === j) {
-                break;
-              }
-
-              const iRow = oTd.getRow();
-              const iColumn = oTd.getColumn();
-
-              const iDataRow = this.oDataRowToTableRow[iRow];
-              const sValue = this.aData[iDataRow][iColumn];
-
-              if (oTd.getDisplayedValue() !== sValue) {
-                oTd.setDisplayedValue(sValue, true);
-              }
-            }
-          }
-        } else if (oEvent.deltaY > 0) {
-          if (this.iCurrentLastRow >= this.aData.length - 1) {
-            return;
-          }
-
-          this.iCurrentFirstRow++;
-          this.iCurrentLastRow++;
-
-          for (let sRowId in Object.keys(this.oDataRowToTableRow)) {
-            this.oDataRowToTableRow[sRowId] = this.oDataRowToTableRow[sRowId] + 1;
-          }
-
-
-
-          let iBorderWidth = 0;
-          let iLastTdIndex = null;
-          for (let i = 0; i < this.iVisibleRowsCount; i++) {
-            console.time("row");
-            const aRowTds = this.aRows[i];
-
-            const iLength = aRowTds.length;
-            for (let j = 0; j < iLength; j++) {
-              const oTd = aRowTds[j];
-
-              if (iLastTdIndex === null) {
-                if (this.iTableBodyScrollContainerWidth < iBorderWidth) {
-                  iLastTdIndex = j;
-                  break;
-                }
-
-                iBorderWidth += oTd.getWidth();
-              } else if (iLastTdIndex === j) {
-                break;
-              }
-
-              const iRow = oTd.getRow();
-              const iColumn = oTd.getColumn();
-
-              const iDataRow = this.oDataRowToTableRow[iRow];
-              const sValue = this.aData[iDataRow][iColumn];
-
-              if (oTd.getDisplayedValue() !== sValue) {
-                oTd.setDisplayedValue(sValue, true);
-              }
-            }
-            console.timeEnd("row");
-          }
-        }
+        this.onWheelHandler(oEvent);
       };
 
-      const { aRows, mTdsById, $TableBodyScrollContainer, mHeaderTdsById, aHeaderRows } = TableRenderer.renderTable({
-        oContext: this,
-        oIntObserver: this.oIntersectionObserver,
-        oIdGenerator: this.oIdGenerator,
-        onWheel: onWheelHandler
+      const { bodyTBody, headerTBody, bodyScrollContainer } = TableRenderer.renderTable({
+        oContext: this
       });
 
-      for (let i = 0; i < this.iVisibleRowsCount; i++) {
-        this.oDataRowToTableRow[i] = i;
-      }
+      this.$TableBodyScrollContainer = bodyScrollContainer;
+      this.$TableHeaderBody = headerTBody;
+      this.$TableBody = bodyTBody;
 
-      this.$TableBodyScrollContainer = $TableBodyScrollContainer;
-      this.iTableBodyScrollContainerWidth = $TableBodyScrollContainer.clientWidth;
-      this.aRows = aRows;
-      this.mTdsById = mTdsById;
-      console.log(this.mTdsById)
-      console.log(this.aRows)
-      console.log(this.oIdGenerator.next().value)
-      console.log(this.oIdGenerator.next().value)
+      const oColumn = new Column({
+        sId: this.oIdColumnsGenerator.next().value
+      });
 
     },
 
-    isInViewport: (el) => {
-      const rect = el.getBoundingClientRect();
-      return rect.right <= (window.innerWidth || document.documentElement.clientWidth);
-      // return (
-      //   rect.top >= 0 &&
-      //   rect.left >= 0 &&
-      //   rect.bottom <= (window.innerHeight || document.documentElement.clientHeight) &&
-
-      // );
+    isInViewport: (element) => {
+      const rect = element.getBoundingClientRect();
+      return (
+        rect.top >= 0 &&
+        rect.left >= 0 &&
+        rect.bottom <= (window.innerHeight || document.documentElement.clientHeight) &&
+        rect.right <= (window.innerWidth || document.documentElement.clientWidth)
+      );
     },
 
     renderer: TableRenderer
