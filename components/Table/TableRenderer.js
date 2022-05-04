@@ -1,6 +1,6 @@
 
-sap.ui.define(["sap/ui/core/Renderer", "./TableCell"],
-  function (Renderer, TableCell) {
+sap.ui.define(["sap/ui/core/Renderer", "./TableBodyCell", "./TableHeaderCell"],
+  function (Renderer, TableBodyCell, TableHeaderCell) {
     "use strict";
 
     const oRenderer = {};
@@ -21,6 +21,8 @@ sap.ui.define(["sap/ui/core/Renderer", "./TableCell"],
       $TableHeaderContainer.className = "tableHeaderWrapper";
       const $TableHeader = document.createElement('table');
       $TableHeader.className = "tableHeader";
+      const $TableHeaderBody = document.createElement('tbody');
+      $TableHeaderBody.className = "headerTableBody tableBody"
 
       const $TableBodyContainer = document.createElement('div');
       $TableBodyContainer.className = "tableBodyWrapper";
@@ -35,21 +37,42 @@ sap.ui.define(["sap/ui/core/Renderer", "./TableCell"],
       const $HorizontalScrollBar = document.createElement('div');
       $HorizontalScrollBar.className = "scrollBar horizontalScrollBar";
       const $TableBody = document.createElement('table');
-      $TableBody.className = "tableBody";
+      $TableBody.className = "bodyTableBody tableBody";
       const $TBody = document.createElement('tbody');
 
       const iHeaders = oControl.getHeaderRowsCount();
       const iColumns = oControl.getColumnsCount();
 
+      const aHeaderRows = [];
+      const mHeaderTdsById = new Map();
+
       for (let i = 0; i < iHeaders; i++) {
         const tr = document.createElement('tr');
 
         for (let j = 0; j < iColumns; j++) {
+          const sId = oIdGenerator.next().value;
           const td = document.createElement('td');
-          td.innerHTML = `${i}:${j}`
+          td.setAttribute("id", sId);
+
+          const sData = `${i}:${j}`;
           tr.appendChild(td);
+          const oCell = new TableHeaderCell({
+            element: td,
+            rowElement: tr,
+            sId: sId,
+            // Values is hardcoded
+            iWidth: 42,
+            sWidthUnit: "px",
+            iColumn: j,
+            iRow: i,
+            tBodyRef: $TableBody,
+            vValue: sData
+          });
+
+          mHeaderTdsById.set(sId, oCell);
+          aHeaderRows.push(oCell);
         }
-        $TableHeader.appendChild(tr);
+        $TableHeaderBody.appendChild(tr);
       };
 
       const aTableData = oControl.getData();
@@ -71,7 +94,9 @@ sap.ui.define(["sap/ui/core/Renderer", "./TableCell"],
           // td.innerHTML = `<input style='width:${20}px;' value='HEADER ${sData}'>`;
           tr.appendChild(td);
 
-          const oCell = new TableCell(td, tr, {
+          const oCell = new TableBodyCell({
+            element: td,
+            rowElement: tr,
             sId: sId,
             // Values is hardcoded
             iWidth: 42,
@@ -92,7 +117,7 @@ sap.ui.define(["sap/ui/core/Renderer", "./TableCell"],
 
       $TableBody.appendChild($TBody);
 
-
+      $TableHeader.appendChild($TableHeaderBody);
       $TableHeaderContainer.appendChild($TableHeader);
       $TableContainer.appendChild($TableHeaderContainer);
 
@@ -111,7 +136,9 @@ sap.ui.define(["sap/ui/core/Renderer", "./TableCell"],
         $TBody: $TBody,
         $TableBodyScrollContainer,
         aRows,
-        mTdsById
+        mTdsById,
+        mHeaderTdsById,
+        aHeaderRows
       }
     }
 

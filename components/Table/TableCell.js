@@ -3,17 +3,16 @@ sap.ui.define([
   "sap/ui/base/Object",
 ], function (UI5Object) {
   return UI5Object.extend("TableCell", {
-    constructor: function (element, rowElement, mParameters) {
-      this._sId = mParameters.sId;
-      this._vValue = mParameters.vValue;
+    constructor: function ({ element, rowElement, vValue, sId, iWidth, sWidthUnit, iColumn, iRow, tBodyRef }) {
+      this._sId = sId;
+      this._vValue = vValue;
       this._oDomRef = element;
       this._oRowDomRef = rowElement;
-      this._iWidth = mParameters.iWidth;
-      this._sWidthUnit = mParameters.sWidthUnit
-      this._iColumn = mParameters.iColumn;
-      this._iRow = mParameters.iRow;
-      this._tBodyRef = mParameters.tBodyRef
-      this._scrollContainerRef = mParameters.scrollContainerRef
+      this._iWidth = iWidth;
+      this._sWidthUnit = sWidthUnit
+      this._iColumn = iColumn;
+      this._iRow = iRow;
+      this._tBodyRef = tBodyRef
     },
 
     getDisplayedValue: function () {

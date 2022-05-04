@@ -167,7 +167,7 @@ sap.ui.define([
         }
       };
 
-      const { aRows, mTdsById, $TableBodyScrollContainer } = TableRenderer.renderTable({
+      const { aRows, mTdsById, $TableBodyScrollContainer, mHeaderTdsById, aHeaderRows } = TableRenderer.renderTable({
         oContext: this,
         oIntObserver: this.oIntersectionObserver,
         oIdGenerator: this.oIdGenerator,
