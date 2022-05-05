@@ -3,10 +3,11 @@ sap.ui.define([
   "sap/ui/base/Object",
 ], function (UI5Object) {
   return UI5Object.extend("TableCell", {
-    constructor: function ({ element, rowElement, vValue, sId, iWidth, sWidthUnit, iColumn, iRow, tBodyRef }) {
+    constructor: function ({ element, rowElement, vValue, sId, iWidth, sWidthUnit, iColumn, iRow, tBodyRef, oRow }) {
       this._sId = sId;
       this._vValue = vValue;
       this._oDomRef = element;
+      this._oRow = oRow;
       this._oRowDomRef = rowElement;
       this._iWidth = iWidth;
       this._sWidthUnit = sWidthUnit
@@ -37,12 +38,22 @@ sap.ui.define([
       }
     },
 
+    setDomRef: function (element) {
+      this._oDomRef = element;
+      return this;
+    },
+
     getDomRef: function () {
       return this._oDomRef;
     },
 
-    getRpwDomRef: function () {
+    getRowDomRef: function () {
       return this._oRowDomRef;
+    },
+
+    setRowDomRef: function (element) {
+      this._oRowDomRef = element;
+      return this;
     },
 
     getWidth: function () {

@@ -8,7 +8,7 @@ sap.ui.define([
       this.aColumns = [];
       this.iRows = 70;
       this.iColumns = 400;
-      this.iColumnHeaderRows = 5;
+      this.iColumnHeaderRows = 2;
       // this.oDataMap = new Map();
       this.iVisibleRowsCount = 30;
       this.iCurrentFirstRow = 0;
@@ -53,6 +53,7 @@ sap.ui.define([
           yield `${sTableId}-Column-${index++}`;
       })();
 
+      this.aColumns2BeCreated = [];
     },
 
 
@@ -184,7 +185,103 @@ sap.ui.define([
       }
     },
 
+    addColumn2BeCreated: function (oColumn) {
+      const oColumn2BeCreated = new Column({
+        sId: this.oIdColumnsGenerator.next().value,
+        aHeaders: oColumn.aHeaders
+      });
+
+      this.aColumns.push(oColumn2BeCreated)
+    },
+
+    createColumns: function () {
+      this.$TableHeaderBody.replaceChildren(...this.createHeadersRows());
+      this.$TableBody.replaceChildren(...this.createDataRows());
+    },
+
+    createHeadersRows: function () {
+      const aColumns = this.aColumns;
+      const aHeaderTrs = [];
+      const aHeaderTds = [];
+      const iHeadersAmount = this.iColumnHeaderRows;
+      const aTrs = [];
+      const aTds = [];
+
+      this.aRows = [];
+
+      for (let i = 0; i < iHeadersAmount; i++) {
+        const sRowId = this.oIdRowGenerator.next().value;
+        const oTr = TableRenderer.createElement("tr", [], [["id", sRowId]]);
+
+        const oRow = new TableRow({
+          sId: sRowId,
+          iRow: i,
+        });
+
+        this.aRows.push(oRow);
+
+        oRow.setDomRef(oTr);
+
+
+        let iColSpan = 0;
+        aColumns.forEach((oColumn, iColumn) => {
+          const sCellId = this.oIdCellGenerator.next().value;
+          oColumn.setColumnIndex(iColumn);
+          const oCell = new TableCell({
+            sId: sCellId,
+            iRow: i,
+            iColumn,
+            oRow
+          });
+          oRow.addCell(oCell);
+          const aHeaders = oColumn.getHeadersObjects();
+          const oHeader = aHeaders[i];
+
+          if (iColSpan > 0) {
+            iColSpan--;
+            return;
+          }
+
+          iColSpan = oHeader?.span ?? 0;
+
+          const aAttributes = [["id", sCellId]];
+
+          if (oHeader?.span) {
+            aAttributes.push(["colspan", oHeader.span]);
+            iColSpan--;
+          }
+
+          const oTd = TableRenderer.createElement("td", [], aAttributes);
+          oTd.innerHTML = oHeader?.text || "";
+          aHeaderTds.push(oTd);
+          oTr.appendChild(oTd);
+          oColumn.addHeaderCell(oCell);
+          oCell.setDomRef(oTd);
+          oCell.setRowDomRef(oTr);
+        });
+
+        aHeaderTrs.push(aHeaderTds);
+        aTrs.push(oTr);
+      }
+
+      return aTrs;
+    },
+
+    createDataRows: function () {
+      const aColumns = this.aColumns;
+      const aHeaderTrs = [];
+      const aHeaderTds = [];
+      const aTrs = [];
+      const aTds = [];
+      const iRows = this.iVisibleRowsCount;
+
+      // iRows
+
+    },
+
     populateTableWithData: function () {
+      const iHeaders = this.iColumnHeaderRows;
+
 
       // for (let i = 0; i < iHeaders; i++) {
       //   const tr = document.createElement('tr');
@@ -291,9 +388,9 @@ sap.ui.define([
       this.$TableHeaderBody = headerTBody;
       this.$TableBody = bodyTBody;
 
-      const oColumn = new Column({
-        sId: this.oIdColumnsGenerator.next().value
-      });
+      // const oColumn = new Column({
+      //   sId: this.oIdColumnsGenerator.next().value
+      // });
 
     },
 

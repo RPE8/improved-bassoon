@@ -29,7 +29,15 @@
 }
 
 #TABLE td {
-    max-width: 40px;
-    min-width: 40px;
+    border: 1px red solid;
+    max-width: 60px;
+    min-width: 60px;
 }
 
+.tableBodyWrapper {
+    border: 1px yellow solid;
+}
+
+.tableHeaderWrapper {
+    border: 1px green solid;
+}

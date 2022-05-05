@@ -1,23 +1,30 @@
 // TODO: To prorotype
 sap.ui.define([
   "sap/ui/base/Object",
-], function (Object) {
+  "./TableCell"
+], function (Object, TableCell) {
   return Object.extend("TableRow", {
-    constructor: function ({ iRow, sId, aTds = [], tBody, element }) {
+    constructor: function ({ iColumn, iRow, sId, aCells = [], tBody, element }) {
       this._iRow = iRow;
+      this._iColumn = iColumn;
       this._sId = sId;
-      this._aTds = aTds;
+      this._aCells = aCells;
       this._oDomRefToTBody = tBody;
       this._oDomRef = element;
     },
 
-    setTds: function (aValue) {
-      this._aTds = aValue;
+    setCells: function (aValue) {
+      this._aCells = aValue;
       return this;
     },
 
-    getTds: function () {
-      return this._aTds;
+    addCell: function (oCell) {
+      this._aCells.push(oCell);
+      return this;
+    },
+
+    getCells: function () {
+      return this._aCells;
     },
 
     setDomRef: function (element) {
