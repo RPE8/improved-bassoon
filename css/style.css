@@ -27,11 +27,14 @@
     width: 100%;
     height: 40px;
 }
+#TABLE table {
+    width: auto;
+}
 
 #TABLE td {
     border: 1px red solid;
-    max-width: 60px;
-    min-width: 60px;
+    /* max-width: 200px;
+    min-width: 200px; */
 }
 
 .tableBodyWrapper {
@@ -40,4 +43,5 @@
 
 .tableHeaderWrapper {
     border: 1px green solid;
+    /* overflow-x: auto; */
 }

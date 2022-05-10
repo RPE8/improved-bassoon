@@ -1,48 +1,57 @@
 // TODO: To prorotype
-sap.ui.define([
-  "sap/ui/base/Object",
-  "./TableCell"
+sap.ui.define([ // eslint-disable-line
+	"sap/ui/base/Object",
+	"./TableCell"
 ], function (Object, TableCell) {
-  return Object.extend("TableRow", {
-    constructor: function ({ iColumn, iRow, sId, aCells = [], tBody, element }) {
-      this._iRow = iRow;
-      this._iColumn = iColumn;
-      this._sId = sId;
-      this._aCells = aCells;
-      this._oDomRefToTBody = tBody;
-      this._oDomRef = element;
-    },
+	return Object.extend("TableRow", {
+		constructor: function ({ iColumn, iRow, sId, aCells = [], tBody, element }) {
+			this._iRow = iRow;
+			this._iColumn = iColumn;
+			this._sId = sId;
+			this._aCells = aCells;
+			this._oDomRefToTBody = tBody;
+			this._oDomRef = element;
+		},
 
-    setCells: function (aValue) {
-      this._aCells = aValue;
-      return this;
-    },
+		setId: function (sValue) {
+			this._sId = sValue;
+			return this;
+		},
 
-    addCell: function (oCell) {
-      this._aCells.push(oCell);
-      return this;
-    },
+		getId: function () {
+			return this._sId;
+		},
 
-    getCells: function () {
-      return this._aCells;
-    },
+		setCells: function (aValue) {
+			this._aCells = aValue;
+			return this;
+		},
 
-    setDomRef: function (element) {
-      this._oDomRef = element;
-      return this;
-    },
+		addCell: function (oCell) {
+			this._aCells.push(oCell);
+			return this;
+		},
 
-    getDomRef: function (element) {
-      return this._oDomRef;
-    },
+		getCells: function () {
+			return this._aCells;
+		},
 
-    setDomRefToTBody: function (element) {
-      this._oDomRefToTBody = element;
-      return this;
-    },
+		setDomRef: function (element) {
+			this._oDomRef = element;
+			return this;
+		},
 
-    getDomRefToTBody: function (element) {
-      return this._oDomRefToTBody;
-    }
-  });
+		getDomRef: function (element) {
+			return this._oDomRef;
+		},
+
+		setDomRefToTBody: function (element) {
+			this._oDomRefToTBody = element;
+			return this;
+		},
+
+		getDomRefToTBody: function (element) {
+			return this._oDomRefToTBody;
+		}
+	});
 });

@@ -1,60 +1,95 @@
 // TODO: To prorotype
-sap.ui.define([
-  "sap/ui/base/Object",
+sap.ui.define([ // eslint-disable-line
+	"sap/ui/base/Object",
 ], function (Object) {
-  return Object.extend("Column", {
-    constructor: function ({ sId, aClasses = [], iColumn, aHeaders }) {
-      this._sId = sId;
-      this._aClasses = aClasses;
-      this._aHeadersObjects = aHeaders;
-      this._aHeaderCells = [];
-      this._aDataCells = [];
-      this._iColumn = iColumn;
-    },
+	return Object.extend("Column", {
+		constructor: function ({ sId, aClasses = [], iColumn, aHeaders, fnDataAccessor, iWidth, sWidthUnit }) {
+			this._sId = sId;
+			this._aClasses = aClasses;
+			this._aHeadersObjects = aHeaders;
+			this._aHeaderCells = [];
+			this._aDataCells = [];
+			this._fnDataAccessor = fnDataAccessor;
+			this._iColumn = iColumn;
+			this._iWidth = iWidth;
+			this._sWidthUnit = sWidthUnit;
+		},
 
-    setHeaderCells: function (aValue) {
-      this._aHeaderCells = aValue;
-      return this;
-    },
+		setId: function (sValue) {
+			this._sId = sValue;
+			return this;
+		},
 
+		getId: function () {
+			return this._sId;
+		},
 
-    getHeaderCells: function () {
-      return this._aHeaderCells;
-    },
+		setHeaderCells: function (aValue) {
+			this._aHeaderCells = aValue;
+			return this;
+		},
 
-    addHeaderCell: function (oCell) {
-      this._aHeaderCells.push(oCell);
-      return this;
-    },
+		getHeaderCells: function () {
+			return this._aHeaderCells;
+		},
 
-    setColumnIndex: function (iValue) {
-      this._iColumn = iValue;
-      return this;
-    },
+		addHeaderCell: function (oCell) {
+			this._aHeaderCells.push(oCell);
+			return this;
+		},
 
-    getColumnIndex: function () {
-      return this._iColumn;
-    },
+		setColumnIndex: function (iValue) {
+			this._iColumn = iValue;
+			return this;
+		},
 
-    setDataCells: function (aValue) {
-      this._aDataCells = aValue;
-      return this;
-    },
+		getColumnIndex: function () {
+			return this._iColumn;
+		},
 
-    getDataCell: function () {
-      return this._aDataCells;
-    },
+		setDataCells: function (aValue) {
+			this._aDataCells = aValue;
+			return this;
+		},
 
-    addDataCells: function (oCell) {
-      this._aDataCells.push(oCell);
-      return this;
-    },
+		getDataCell: function () {
+			return this._aDataCells;
+		},
 
-    getHeadersObjects: function () {
-      return this._aHeadersObjects;
-    },
+		addDataCells: function (oCell) {
+			this._aDataCells.push(oCell);
+			return this;
+		},
 
+		getHeadersObjects: function () {
+			return this._aHeadersObjects;
+		},
 
+		setDataAccessor: function (fnAccessor) {
+			this._fnDataAccessor = fnAccessor;
+			return this;
+		},
 
-  });
+		getDataAccessor: function () {
+			return this._fnDataAccessor;
+		},
+
+		setWidth: function (iValue) {
+			this._iWidth = iValue;
+			return this;
+		},
+
+		getWidth: function () {
+			return this._iWidth;
+		},
+
+		setWidthUnit: function (sValue) {
+			this._iWidthUnit = sValue;
+			return this;
+		},
+
+		getWidthUnit: function () {
+			return this._iWidthUnit;
+		},
+	});
 });

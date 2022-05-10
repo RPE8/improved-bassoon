@@ -1,96 +1,123 @@
 // TODO: To prorotype
-sap.ui.define([
-  "sap/ui/base/Object",
+sap.ui.define([ // eslint-disable-line
+	"sap/ui/base/Object",
 ], function (UI5Object) {
-  return UI5Object.extend("TableCell", {
-    constructor: function ({ element, rowElement, vValue, sId, iWidth, sWidthUnit, iColumn, iRow, tBodyRef, oRow }) {
-      this._sId = sId;
-      this._vValue = vValue;
-      this._oDomRef = element;
-      this._oRow = oRow;
-      this._oRowDomRef = rowElement;
-      this._iWidth = iWidth;
-      this._sWidthUnit = sWidthUnit
-      this._iColumn = iColumn;
-      this._iRow = iRow;
-      this._tBodyRef = tBodyRef
-    },
+	return UI5Object.extend("TableCell", {
+		constructor: function ({ element, rowElement, vValue, sId, iWidth, sWidthUnit, iColumn, iRow, tBodyRef, oRow, oColumn}) {
+			this._sId = sId;
+			this._vValue = vValue;
+			this._oDomRef = element;
+			this._iRow = iRow;
+			this._oRow = oRow;
+			this._oRowDomRef = rowElement;
+			this._iWidth = iWidth;
+			this._sWidthUnit = sWidthUnit;
+			this._iColumn = iColumn;
+			this._oColumn = oColumn;
+			this._tBodyRef = tBodyRef;
+		},
 
-    getDisplayedValue: function () {
-      return this.getDomRef().innerHTML;
-    },
+		getDisplayedValue: function () {
+			return this.getDomRef().innerHTML;
+		},
 
-    setDisplayedValue: function (vValue, bUpdateUnderhoodValue) {
-      this.getDomRef().innerHTML = vValue;
-      if (bUpdateUnderhoodValue) {
-        this.setUnderhoodValue(vValue, false);
-      }
-    },
+		setDisplayedValue: function (vValue, bUpdateUnderhoodValue) {
+			this.getDomRef().innerHTML = vValue;
+			if (bUpdateUnderhoodValue) {
+				this.setUnderhoodValue(vValue, false);
+			}
+		},
 
-    getUnderhoodValue: function () {
-      return this._vValue;
-    },
+		getUnderhoodValue: function () {
+			return this._vValue;
+		},
 
-    setUnderhoodValue: function (vValue, bUpdateDisplayedValue) {
-      this._vValue = vValue;
-      if (bUpdateDisplayedValue) {
-        this.setDisplayedValue(vValue, false);
-      }
-    },
+		setUnderhoodValue: function (vValue, bUpdateDisplayedValue) {
+			this._vValue = vValue;
+			if (bUpdateDisplayedValue) {
+				this.setDisplayedValue(vValue, false);
+			}
+		},
 
-    setDomRef: function (element) {
-      this._oDomRef = element;
-      return this;
-    },
+		setId: function (sValue) {
+			this._sId = sValue;
+			return this;
+		},
 
-    getDomRef: function () {
-      return this._oDomRef;
-    },
+		getId: function () {
+			return this._sId;
+		},
 
-    getRowDomRef: function () {
-      return this._oRowDomRef;
-    },
+		setDomRef: function (element) {
+			this._oDomRef = element;
+			return this;
+		},
 
-    setRowDomRef: function (element) {
-      this._oRowDomRef = element;
-      return this;
-    },
+		getDomRef: function () {
+			return this._oDomRef;
+		},
 
-    getWidth: function () {
-      return this._iWidth;
-    },
+		getRowDomRef: function () {
+			return this._oRowDomRef;
+		},
 
-    setWidth: (iValue) => {
-      this._iWidth = iValue;
-      return this;
-    },
+		setRowDomRef: function (element) {
+			this._oRowDomRef = element;
+			return this;
+		},
 
-    getWidthUnit: function () {
-      return this._sWidthUnit;
-    },
+		getWidth: function () {
+			return this._iWidth;
+		},
 
-    setWidthUnit: function (sValue) {
-      this._sWidthUnit = sValue;
-      return this;
-    },
+		setWidth: (iValue) => {
+			this._iWidth = iValue;
+			return this;
+		},
 
-    getColumn: function () {
-      return this._iColumn;
-    },
+		getWidthUnit: function () {
+			return this._sWidthUnit;
+		},
 
-    getRow: function () {
-      return this._iRow;
-    },
+		setWidthUnit: function (sValue) {
+			this._sWidthUnit = sValue;
+			return this;
+		},
 
-    setColumn: function (iValue) {
-      this._iColumn = iValue;
-      return this;
-    },
+		getColumnIndex: function () {
+			return this._iColumn;
+		},
 
-    setRow: function (iValue) {
-      this._iRow = iValue;
-      return this;
-    }
+		getRowIndex: function () {
+			return this._iRow;
+		},
 
-  });
+		setColumnIndex: function (iValue) {
+			this._iColumn = iValue;
+			return this;
+		},
+
+		setRowIndex: function (iValue) {
+			this._iRow = iValue;
+			return this;
+		},
+
+		getColumn: function () {
+			return this._oColumn;
+		},
+
+		getRow: function () {
+			return this._oRow;
+		},
+
+		setColumn: function (oValue) {
+			this._pColumn = oValue;
+			return this;
+		},
+
+		setRow: function (pValue) {
+			this._oRow = oValue;
+			return this;
+		}
+	});
 });

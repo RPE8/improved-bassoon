@@ -1,75 +1,79 @@
 
-sap.ui.define(["sap/ui/core/Renderer", "./TableBodyCell", "./TableHeaderCell", "./TableRow"],
-  function (Renderer, TableBodyCell, TableHeaderCell, TableRow) {
-    "use strict";
+sap.ui.define(["sap/ui/core/Renderer", "./TableBodyCell", "./TableHeaderCell", "./TableRow"], // eslint-disable-line
+	function (Renderer, TableBodyCell, TableHeaderCell, TableRow) {
+		"use strict";
 
-    const oRenderer = {};
+		const oRenderer = {};
 
-    oRenderer.render = function (rm) {
-      rm.write("<div id='TABLE'></div>");
-    };
+		oRenderer.render = function (rm) {
+			rm.write("<div id='TABLE'></div>");
+		};
 
-    oRenderer.renderColumns = function (element, aColumn) {
-      const aColumns = [];
-    };
+		oRenderer.renderColumns = function (element, aColumn) {
+			const aColumns = [];
+		};
 
-    oRenderer.createElement = function (sTag, sClass, aAttributes = []) {
-      const element = document.createElement(sTag);
+		oRenderer.createElement = function (sTag, sClass, aAttributes = []) {
+			const element = document.createElement(sTag);
 
-      if (sClass && sClass.length) {
-        const aClasses = sClass.split(" ");
+			if (sClass && sClass.length) {
+				const aClasses = sClass.split(" ");
 
-        aClasses.forEach(sClass => element.classList.add(sClass));
-      }
+				aClasses.forEach(sClass => element.classList.add(sClass));
+			}
 
-      aAttributes.forEach((aAttribute) => {
-        element.setAttribute(aAttribute[0], aAttribute[1]);
-      });
+			aAttributes.forEach((aAttribute) => {
+				element.setAttribute(aAttribute[0], aAttribute[1]);
+			});
 
-      return element;
-    };
+			return element;
+		};
 
-    oRenderer.renderTableRows = function (aRows) {
+		oRenderer.renderTableRows = function (aRows) {
 
-    };
+		};
 
-    oRenderer.renderTable = function (mParameters) {
-      const $TableContainer = document.getElementById("TABLE");
+		oRenderer.renderTable = function (mParameters) {
+			const $TableContainer = document.getElementById("TABLE");
 
-      const $TableHeaderContainer = this.createElement("div", "tableHeaderWrapper");
-      const $TableHeader = this.createElement("table", "tableHeader");
-      const $TableHeaderBody = this.createElement("tbody", "headerTableBody tableBody");
+			const $TableHeaderContainer = this.createElement("div", "tableHeaderWrapper");
+			const $TableHeader = this.createElement("table", "tableHeader");
+			const $TableHeaderBody = this.createElement("tbody", "headerTableBody tableBody");
 
-      const $TableBodyContainer = this.createElement("div", "tableBodyWrapper");
-      const $TableBodyScrollContainer = this.createElement("div", "tableBodyScrollWrapper");
-      const $VerticalScrollDiv = this.createElement("div", "scroll verticalScroll");
-      const $VerticalScrollBar = this.createElement("div", "scrollBar verticalScrollBar");
-      const $HorizontalScrollDiv = this.createElement("div", "scroll horizontalScroll");
-      const $HorizontalScrollBar = this.createElement("div", "scrollBar horizontalScrollBar");
-      const $TableBody = this.createElement("table", "bodyTableBody tableBody");
-      const $TBody = this.createElement("tbody");
+			const $TableBodyContainer = this.createElement("div", "tableBodyWrapper");
+			const $TableBodyScrollContainer = this.createElement("div", "tableBodyScrollWrapper");
 
-      $TableBody.appendChild($TBody);
+			const $VerticalScrollDiv = this.createElement("div", "scroll verticalScroll");
+			const $VerticalScrollBar = this.createElement("div", "scrollBar verticalScrollBar");
+			const $HorizontalScrollDiv = this.createElement("div", "scroll horizontalScroll");
+			const $HorizontalScrollBar = this.createElement("div", "scrollBar horizontalScrollBar");
+			const $TableBodyScrollContainerContent = this.createElement("div");
+			const $TableBody = this.createElement("table", "bodyTableBody tableBody");
+			const $TBody = this.createElement("tbody");
 
-      $TableHeader.appendChild($TableHeaderBody);
-      $TableHeaderContainer.appendChild($TableHeader);
-      $TableContainer.appendChild($TableHeaderContainer);
+			$TableBody.appendChild($TBody);
 
-      $TableBodyScrollContainer.appendChild($TableBody);
-      $VerticalScrollDiv.appendChild($VerticalScrollBar);
-      $HorizontalScrollDiv.appendChild($HorizontalScrollBar);
-      $TableBodyScrollContainer.appendChild($VerticalScrollDiv);
-      $TableBodyScrollContainer.appendChild($HorizontalScrollDiv);
-      $TableBodyContainer.appendChild($TableBodyScrollContainer);
+			$TableHeader.appendChild($TableHeaderBody);
+			$TableHeaderContainer.appendChild($TableHeader);
+			$TableContainer.appendChild($TableHeaderContainer);
 
-      $TableContainer.appendChild($TableBodyContainer);
+			$TableBodyScrollContainerContent.appendChild($TableBody);
+			$TableBodyScrollContainer.appendChild($TableBodyScrollContainerContent);
+			// $TableBodyScrollContainer.appendChild($TableBody);
+			$VerticalScrollDiv.appendChild($VerticalScrollBar);
+			$HorizontalScrollDiv.appendChild($HorizontalScrollBar);
+			$TableBodyScrollContainer.appendChild($VerticalScrollDiv);
+			$TableBodyScrollContainer.appendChild($HorizontalScrollDiv);
+			$TableBodyContainer.appendChild($TableBodyScrollContainer);
 
-      return {
-        bodyTBody: $TBody,
-        headerTBody: $TableHeaderBody,
-        bodyScrollContainer: $TableBodyScrollContainer
-      }
-    }
+			$TableContainer.appendChild($TableBodyContainer);
 
-    return oRenderer;
-  });
+			return {
+				bodyTBody: $TBody,
+				headerTBody: $TableHeaderBody,
+				bodyScrollContainer: $TableBodyScrollContainer
+			};
+		};
+
+		return oRenderer;
+	});
