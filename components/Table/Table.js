@@ -9,6 +9,7 @@ sap.ui.define([ // eslint-disable-line
 		init: function () {
 			this.aColumns = [];
 			this.iRows = 70;
+			this.iRowHeight = 22;
 			this.iColumns = 70;
 			this.iColumnHeaderRows = 3;
 			// this.oDataMap = new Map();
@@ -26,6 +27,9 @@ sap.ui.define([ // eslint-disable-line
 			this.aDataRow = [];
 			this.mCellsById = new Map();
 			this.mRowsById = new Map();
+
+			this.verticalSBTop = 0;
+			this.horizontalSBLeft = 0;
 
 			this.aData = this.createData();
 
@@ -123,6 +127,8 @@ sap.ui.define([ // eslint-disable-line
 		},
 
 		onWheelHandler: function (oEvent) {
+			const aKeys = Object.keys(this.oDataRowToTableRow);
+      
 			if (oEvent.deltaY < 0) {
 				if (this.iCurrentFirstRow <= 0) {
 					return;
@@ -134,6 +140,8 @@ sap.ui.define([ // eslint-disable-line
 				for (let sRowId in Object.keys(this.oDataRowToTableRow)) {
 					this.oDataRowToTableRow[sRowId] = this.oDataRowToTableRow[sRowId] - 1;
 				}
+				const [iTop] = this.$VerticalScrollBar.style.top.split("%");
+				this.$VerticalScrollBar.style.top = `${(+iTop ?? 0) - (100 / this.iRows)}%`;
 
 				this._reassigneRowsDataAccordingToDataRow2TableRow();
 			} else if (oEvent.deltaY > 0) {
@@ -143,13 +151,19 @@ sap.ui.define([ // eslint-disable-line
 
 				this.iCurrentFirstRow++;
 				this.iCurrentLastRow++;
-
-				for (let sRowId in Object.keys(this.oDataRowToTableRow)) {
+				
+				for (let sRowId in aKeys) {
 					this.oDataRowToTableRow[sRowId] = this.oDataRowToTableRow[sRowId] + 1;
 				}
 
+				const [iTop] = this.$VerticalScrollBar.style.top.split("%");
+				this.$VerticalScrollBar.style.top = `${(+iTop ?? 0) + (100 / this.iRows)}%`;
+        
 				this._reassigneRowsDataAccordingToDataRow2TableRow();
 			}
+
+			// this.$VerticalScrollBar.style.top = `${this.iRows * (this.oDataRowToTableRow[aKeys.length - 1] - this.iVisibleRowsCount) / 100}%`;
+			
 		},
 
 		addColumn2BeCreated: function (oColumn) {
@@ -200,9 +214,6 @@ sap.ui.define([ // eslint-disable-line
 			this.$TableHeaderBody.replaceChildren(...aHeaderRows);
 			const aRows = this.createDataRows();
 
-			
-			
-
 			// this.$TableBody.setAttribute("width", iBodyWidth);
 			this.$DataTable.setAttribute("width", iBodyWidth);
 			this.$DataTable.setAttribute("cols", this.aColumns.length ?? 0);
@@ -212,8 +223,9 @@ sap.ui.define([ // eslint-disable-line
 			this.iTableBodyScrollContainerWidth = oRect.width;
 			this.iTableBodyScrollContainerHeight = oRect.height;
 
+			// TODO; Dynamic height of rows
 			this.$HorizontalScrollBar.setAttribute("style", `width: ${this.iTableBodyScrollContainerWidth * 100 / iBodyWidth}%`);
-			this.$VerticalScrollBar.setAttribute("style", `height: ${(this.iVisibleRowsCount * 19 * 100) / (this.iRows * 19)}%`);
+			this.$VerticalScrollBar.setAttribute("style", `height: ${(this.iVisibleRowsCount * this.iRowHeight * 100) / (this.iRows * this.iRowHeight)}%`);
       
 			console.log(this.aColumns);
 			console.log(this.aRows);
