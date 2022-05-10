@@ -20,7 +20,7 @@ sap.ui.define([ // eslint-disable-line
 
 		onAfterRendering: function () {
 			setTimeout(() => {
-				for (let i = 0; i < 14; i++) {
+				for (let i = 0; i < 70; i++) {
 					const aCells = [];
 					aCells.push({
 						text: `Span-${i}`,

@@ -9,7 +9,7 @@ sap.ui.define([ // eslint-disable-line
 		init: function () {
 			this.aColumns = [];
 			this.iRows = 70;
-			this.iColumns = 14;
+			this.iColumns = 70;
 			this.iColumnHeaderRows = 3;
 			// this.oDataMap = new Map();
 			this.iVisibleRowsCount = 30;
@@ -171,7 +171,7 @@ sap.ui.define([ // eslint-disable-line
 			this.aDataRows = [];
 			this.mRowsById.clear();
 			this.mCellsById.clear();
-			this.$TableHeaderBody.replaceChildren(...this.createHeadersRows());
+			
 			// TODO: Do we nede to unobserve?
 			this.oIntersectionObserver = new IntersectionObserver((entries) => {
 				entries.forEach((entry) => {
@@ -189,7 +189,32 @@ sap.ui.define([ // eslint-disable-line
 			}, {
 				root: this.$TableBody
 			});
-			this.$TableBody.replaceChildren(...this.createDataRows());
+
+			const aHeaderRows = this.createHeadersRows();
+			let iBodyWidth = 0;
+			if (this.aColumns && this.aColumns.length) {
+				this.aColumns.forEach(oColumn => iBodyWidth += oColumn.getWidth());
+			}
+			this.$HeaderTable.setAttribute("width", iBodyWidth);
+			this.$HeaderTable.setAttribute("cols", this.aColumns.length ?? 0);
+			this.$TableHeaderBody.replaceChildren(...aHeaderRows);
+			const aRows = this.createDataRows();
+
+			
+			
+
+			// this.$TableBody.setAttribute("width", iBodyWidth);
+			this.$DataTable.setAttribute("width", iBodyWidth);
+			this.$DataTable.setAttribute("cols", this.aColumns.length ?? 0);
+			this.$TableBody.replaceChildren(...aRows);
+
+			const oRect = this.$TableBodyScrollContainer.getBoundingClientRect();
+			this.iTableBodyScrollContainerWidth = oRect.width;
+			this.iTableBodyScrollContainerHeight = oRect.height;
+
+			this.$HorizontalScrollBar.setAttribute("style", `width: ${this.iTableBodyScrollContainerWidth * 100 / iBodyWidth}%`);
+			this.$VerticalScrollBar.setAttribute("style", `height: ${(this.iVisibleRowsCount * 19 * 100) / (this.iRows * 19)}%`);
+      
 			console.log(this.aColumns);
 			console.log(this.aRows);
 			console.log(this.aHeaderRows);
@@ -427,14 +452,17 @@ sap.ui.define([ // eslint-disable-line
 				this.onWheelHandler(oEvent);
 			};
 
-			const { bodyTBody, headerTBody, bodyScrollContainer } = TableRenderer.renderTable({
+			const { bodyTBody, headerTBody, bodyScrollContainer, table, headerTable, verticalBar, horizontalBar } = TableRenderer.renderTable({
 				oContext: this
 			});
 			document.getElementById("TABLE").addEventListener("wheel", onWheelHandler);
 			this.$TableBodyScrollContainer = bodyScrollContainer;
 			this.$TableHeaderBody = headerTBody;
 			this.$TableBody = bodyTBody;
-
+			this.$DataTable = table;
+			this.$HeaderTable = headerTable;
+			this.$VerticalScrollBar = verticalBar;
+			this.$HorizontalScrollBar = horizontalBar;
 			// const oColumn = new Column({
 			//   sId: this.oIdColumnsGenerator.next().value
 			// });

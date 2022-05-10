@@ -13,6 +13,7 @@ sap.ui.define([ // eslint-disable-line
 			this._iColumn = iColumn;
 			this._iWidth = iWidth;
 			this._sWidthUnit = sWidthUnit;
+			this._iRenderedWidth = null;
 		},
 
 		setId: function (sValue) {
@@ -90,6 +91,15 @@ sap.ui.define([ // eslint-disable-line
 
 		getWidthUnit: function () {
 			return this._iWidthUnit;
+		},
+
+		setRenderedWidth: function (iValue) {
+			this._iRenderedWidth = iValue;
+			return this;
+		},
+
+		getRenderedWidth: function () {
+			return this._iRenderedWidth;
 		},
 	});
 });

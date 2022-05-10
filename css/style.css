@@ -2,6 +2,18 @@
     height: 100%;
     width: 100%;
     box-sizing: border-box;
+    overflow-x: auto;
+    
+}
+
+table  {
+    border-collapse: collapse;
+}
+
+td {
+    box-sizing: border-box;
+    padding: 0px;
+    border-spacing: 0px;
 }
 
 .tableBodyScrollWrapper {
@@ -19,7 +31,7 @@
 }
 
 .horizontalScrollBar {
-    width: 40px;
+    /* width: 40px; */
     height: 100%;
 }
 
@@ -28,7 +40,7 @@
     height: 40px;
 }
 #TABLE table {
-    width: auto;
+    /* width: auto; */
 }
 
 #TABLE td {
