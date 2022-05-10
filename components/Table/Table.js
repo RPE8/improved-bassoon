@@ -329,7 +329,7 @@ sap.ui.define([ // eslint-disable-line
 		},
 
 		populateTableWithData: function () {
-			const iHeaders = this.iColumnHeaderRows;
+			// const iHeaders = this.iColumnHeaderRows;
 
 
 			// for (let i = 0; i < iHeaders; i++) {
@@ -417,9 +417,9 @@ sap.ui.define([ // eslint-disable-line
 		},
 
 		createTableDataObject: function () {
-			const aData = this.aData;
-			const iColumns = this.iColumns;
-			const iVisibleRows = this.iVisibleRowsCount;
+			// const aData = this.aData;
+			// const iColumns = this.iColumns;
+			// const iVisibleRows = this.iVisibleRowsCount;
 		},
 
 		createTable() {

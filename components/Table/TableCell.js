@@ -115,7 +115,7 @@ sap.ui.define([ // eslint-disable-line
 			return this;
 		},
 
-		setRow: function (pValue) {
+		setRow: function (oValue) {
 			this._oRow = oValue;
 			return this;
 		}

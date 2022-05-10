@@ -1,6 +1,6 @@
 
 sap.ui.define(["sap/ui/core/Renderer", "./TableBodyCell", "./TableHeaderCell", "./TableRow"], // eslint-disable-line
-	function (Renderer, TableBodyCell, TableHeaderCell, TableRow) {
+	function () {
 		"use strict";
 
 		const oRenderer = {};
@@ -9,9 +9,9 @@ sap.ui.define(["sap/ui/core/Renderer", "./TableBodyCell", "./TableHeaderCell", "
 			rm.write("<div id='TABLE'></div>");
 		};
 
-		oRenderer.renderColumns = function (element, aColumn) {
-			const aColumns = [];
-		};
+		// oRenderer.renderColumns = function (element, aColumn) {
+		// 	const aColumns = [];
+		// };
 
 		oRenderer.createElement = function (sTag, sClass, aAttributes = []) {
 			const element = document.createElement(sTag);
@@ -29,11 +29,11 @@ sap.ui.define(["sap/ui/core/Renderer", "./TableBodyCell", "./TableHeaderCell", "
 			return element;
 		};
 
-		oRenderer.renderTableRows = function (aRows) {
+		oRenderer.renderTableRows = function () {
 
 		};
 
-		oRenderer.renderTable = function (mParameters) {
+		oRenderer.renderTable = function () {
 			const $TableContainer = document.getElementById("TABLE");
 
 			const $TableHeaderContainer = this.createElement("div", "tableHeaderWrapper");
