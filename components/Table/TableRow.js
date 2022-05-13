@@ -1,7 +1,6 @@
 // TODO: To prorotype
-sap.ui.define([ // eslint-disable-line
-	"sap/ui/base/Object"
-], function (Object) {
+// eslint-disable-next-line no-undef
+sap.ui.define(["sap/ui/base/Object"], function (Object) {
 	return Object.extend("TableRow", {
 		constructor: function ({ iColumn, iRow, sId, aCells = [], tBody, element }) {
 			this._iRow = iRow;
@@ -51,6 +50,6 @@ sap.ui.define([ // eslint-disable-line
 
 		getDomRefToTBody: function () {
 			return this._oDomRefToTBody;
-		}
+		},
 	});
 });

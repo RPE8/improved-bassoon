@@ -1,7 +1,6 @@
 // TODO: To prorotype
-sap.ui.define([ // eslint-disable-line
-	"./TableCell",
-], function (TableCell) {
+// eslint-disable-next-line no-undef
+sap.ui.define(["./TableCell"], function (TableCell) {
 	return TableCell.extend("TableBodyCell", {
 		constructor: function (oParameters) {
 			TableCell.call(this, oParameters);
@@ -15,6 +14,6 @@ sap.ui.define([ // eslint-disable-line
 		setScrollContainerRef: function (element) {
 			this._scrollContainerRef = element;
 			return this;
-		}
+		},
 	});
 });

@@ -1,7 +1,6 @@
 // TODO: To prorotype
-sap.ui.define([ // eslint-disable-line
-	"sap/ui/base/Object",
-], function (Object) {
+// eslint-disable-next-line no-undef
+sap.ui.define(["sap/ui/base/Object"], function (Object) {
 	return Object.extend("Column", {
 		constructor: function ({ sId, aClasses = [], iColumn, aHeaders, fnDataAccessor, iWidth, sWidthUnit }) {
 			this._sId = sId;
