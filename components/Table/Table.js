@@ -157,6 +157,22 @@ sap.ui.define(
 				// this.$VerticalScrollBar.style.top = `${this.iRows * (this.oDataRowToTableRow[aKeys.length - 1] - this.iVisibleRowsCount) / 100}%`;
 			},
 
+			onScrollBarMouseDownHandler: function (event) {
+				console.log(event);
+			},
+
+			onScrollBarMouseUpHandler: function (event) {
+				console.log(event);
+			},
+
+			pauseEvent: function (e) {
+				if (e.stopPropagation) e.stopPropagation();
+				if (e.preventDefault) e.preventDefault();
+				e.cancelBubble = true;
+				e.returnValue = false;
+				return false;
+			},
+
 			addColumn2BeCreated: function (oColumn) {
 				const oColumn2BeCreated = new Column({
 					sId: this.oIdColumnsGenerator.next().value,
@@ -454,14 +470,26 @@ sap.ui.define(
 			},
 
 			createTable() {
-				const onWheelHandler = (oEvent) => {
+				const $TABLE = (this.$TABLE = document.getElementById("TABLE"));
+
+				const onMouseMove = (this.onScrollMouseMove = (oEvent) => {
+					// prevents text selection
+					this.pauseEvent(oEvent);
+					console.log(oEvent);
+				});
+
+				if (this._fnCurrWheelHandler) {
+					$TABLE.removeEventListener("wheel", this._fnCurrWheelHandler);
+				}
+				const onWheelHandler = (this._fnCurrWheelHandler = (oEvent) => {
 					this.onWheelHandler(oEvent);
-				};
+				});
 
 				const { bodyTBody, headerTBody, bodyScrollContainer, table, headerTable, verticalBar, horizontalBar } = TableRenderer.renderTable({
 					oContext: this,
 				});
-				document.getElementById("TABLE").addEventListener("wheel", onWheelHandler);
+				$TABLE.addEventListener("wheel", onWheelHandler);
+
 				this.$TableBodyScrollContainer = bodyScrollContainer;
 				this.$TableHeaderBody = headerTBody;
 				this.$TableBody = bodyTBody;
@@ -469,6 +497,31 @@ sap.ui.define(
 				this.$HeaderTable = headerTable;
 				this.$VerticalScrollBar = verticalBar;
 				this.$HorizontalScrollBar = horizontalBar;
+
+				if (this._fnCurrVScrollBarMouseDownHandler) {
+					this.$VerticalScrollBar.removeEventListener("mousedown", this._fnCurrVScrollBarMouseDownHandler);
+				}
+
+				if (this._fnCurrVScrollBarMouseUpHandler) {
+					this.$VerticalScrollBar.removeEventListener("mouseup", this._fnCurrVScrollBarMouseUpHandler);
+				}
+
+				const onMouseUp = (this._fnCurrVScrollBarMouseUpHandler = (oEvent, oEvent2) => {
+					this._bScroll = false;
+					$TABLE.removeEventListener("mousemove", onMouseMove);
+					$TABLE.removeEventListener("mouseup", onMouseUp);
+					this.onScrollBarMouseUpHandler(oEvent, oEvent2);
+				});
+
+				const onMouseDown = (this._fnCurrVScrollBarMouseDownHandler = (oEvent, oEvent2) => {
+					this._bScroll = true;
+					$TABLE.addEventListener("mousemove", onMouseMove);
+					$TABLE.addEventListener("mouseup", onMouseUp);
+					this.onScrollBarMouseDownHandler(oEvent, oEvent2);
+				});
+
+				this.$VerticalScrollBar.addEventListener("mousedown", onMouseDown);
+				this.$VerticalScrollBar.addEventListener("mouseup", onMouseUp);
 				// const oColumn = new Column({
 				//   sId: this.oIdColumnsGenerator.next().value
 				// });
