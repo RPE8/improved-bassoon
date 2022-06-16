@@ -1,20 +1,45 @@
 // TODO: To prorotype
 // eslint-disable-next-line no-undef
-sap.ui.define(["sap/ui/core/Control"], function (Control) {
+sap.ui.define(["sap/ui/core/Control", "./InputRenderer"], function (Control, InputRenderer) {
 	return Control.extend("Input", {
-		constructor: function (oParameters) {
+		constructor: function ({ sId, element, oParent, iWidth, sWidthUnits }) {
 			this._sId = sId;
-			this._vValue = vValue;
+			this._oValues = {
+				displayedValue: "",
+				underhoodValue: "",
+			};
 			this._oDomRef = element;
-			this._iRow = iRow;
-			this._oRow = oRow;
-			this._oRowDomRef = rowElement;
+			this._oParent = oParent;
 			this._iWidth = iWidth;
-			this._sWidthUnit = sWidthUnit;
-			this._iColumn = iColumn;
-			this._oColumn = oColumn;
-			this._tBodyRef = tBodyRef;
-			this._oAggregation = oAggregation;
+			this._sWidthUnits = sWidthUnits;
 		},
+
+		getValues: function () {
+			return this._oValues;
+		},
+
+		setValues: function (oValue) {
+			this._oValues = oValue;
+			return this;
+		},
+
+		setValueByType: function (sType, vValue) {
+			if (!(sType in this._oValues)) {
+				this._oValues[sType] = null;
+			}
+
+			this._oValues[sType] = vValue;
+		},
+
+		getValueByType: function (sType) {
+			return this._oValues[sType];
+		},
+
+		render: function () {
+			this._oDomRef = InputRenderer.render({ iWidth: this._iWidth, sWidthUnits: this._sWidthUnits });
+			this._oParent.getDomRef().appendChild(this._oDomRef);
+		},
+
+		renderer: InputRenderer,
 	});
 });

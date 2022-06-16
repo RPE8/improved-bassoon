@@ -198,6 +198,7 @@ sap.ui.define(
 					fnDataAccessor: oColumn.fnDataAccessor,
 					iWidth: oColumn.iWidth,
 					sWidthUnit: oColumn.sWidthUnit,
+					fnAggregationConstructor: oColumn.oAggregationConstructor,
 				});
 
 				this.aColumns.push(oColumn2BeCreated);
@@ -231,7 +232,7 @@ sap.ui.define(
 						root: this.$TableBodyScrollContainer,
 					}
 				);
-				const $HeaderThRow = this.createUtilThRow({ aAdditionalTrClasses: "thRow headerThRow", aAdditionalThClasses: "headerThCell" });
+				const $HeaderThRow = this.createUtilThRow({ aAdditionalTrClasses: ["thRow", "headerThRow"], aAdditionalThClasses: ["headerThCell"] });
 				const aHeaderRows = this.createHeadersRows();
 				let iBodyWidth = 0;
 				if (this.aColumns && this.aColumns.length) {
@@ -296,6 +297,7 @@ sap.ui.define(
 							iRow: i,
 							oRow,
 							iWidth: oColumn.getWidth(),
+							fnAggregationConstructor: oColumn.getAggregationConstructor(),
 							sWidthUnit: oColumn.getWidthUnit(),
 						});
 						oRow.addCell(oCell);
@@ -329,6 +331,7 @@ sap.ui.define(
 						oColumn.addHeaderCell(oCell);
 						oCell.setDomRef($Td);
 						oCell.setRowDomRef($Tr);
+						oCell.renderAggregation();
 					});
 
 					aTrs.push($Tr);
@@ -348,10 +351,14 @@ sap.ui.define(
 				this.mRowsById.set(sRowThId, oRowTh);
 				this.aRows.push(oRowTh);
 
-				const $TrTh = TableRenderer.createElement("tr", `"thRow ${sAdditionalTrClasses}"`, [
-					["id", sRowThId],
-					["style", " height: 0px"],
-				]);
+				const $TrTh = TableRenderer.createElement(
+					"tr",
+					["thRow", ...sAdditionalTrClasses],
+					[
+						["id", sRowThId],
+						["style", " height: 0px"],
+					]
+				);
 				oRowTh.setDomRef($TrTh);
 
 				aColumns.forEach((oColumn, iColumn) => {
@@ -369,11 +376,15 @@ sap.ui.define(
 					});
 					oRowTh.addCell(oCell);
 
-					const $Th = TableRenderer.createElement("th", `"thCell ${sAdditionalThClasses}"`, [
-						["id", sCellId],
-						// ["width", oColumn.getWidth()],
-						["style", `width:${oColumn.getWidth()}${oColumn.getWidthUnit()};`],
-					]);
+					const $Th = TableRenderer.createElement(
+						"th",
+						["thCell", ...sAdditionalThClasses],
+						[
+							["id", sCellId],
+							// ["width", oColumn.getWidth()],
+							["style", `width:${oColumn.getWidth()}${oColumn.getWidthUnit()};max-width:${oColumn.getWidth()}${oColumn.getWidthUnit()};`],
+						]
+					);
 					this.mCellsById.set(sCellId, oCell);
 					$TrTh.appendChild($Th);
 					oColumn.addHeaderCell(oCell);
@@ -417,6 +428,7 @@ sap.ui.define(
 							iRow: i,
 							oRow,
 							iWidth: oColumn.getWidth(),
+							fnAggregationConstructor: oColumn.getAggregationConstructor(),
 							sWidthUnit: oColumn.getWidthUnit(),
 						});
 						oRow.addCell(oCell);
@@ -436,6 +448,7 @@ sap.ui.define(
 						oColumn.addDataCells(oCell);
 						oCell.setDomRef($Td);
 						oCell.setRowDomRef($Tr);
+						oCell.renderAggregation();
 					});
 
 					aTrs.push($Tr);
@@ -479,7 +492,7 @@ sap.ui.define(
 				});
 
 				const { bodyTBody, headerTBody, bodyScrollContainer, table, headerTable, verticalBar, verticalBarScrollContainer, horizontalBar, horizontalBarScrollContainer } =
-					TableRenderer.renderTable({
+					TableRenderer.renderTableContent({
 						oContext: this,
 					});
 				$TABLE.addEventListener("wheel", onWheelHandler);

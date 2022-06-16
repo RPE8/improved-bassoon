@@ -5,7 +5,7 @@ sap.ui.define(
 		"sap/ui/core/mvc/Controller",
 		"../components/Input/Input",
 	],
-	function (Controller) {
+	function (Controller, Input) {
 		"use strict";
 
 		return Controller.extend("improved.bassoon.Content", {
@@ -42,6 +42,7 @@ sap.ui.define(
 							aHeaders: aCells,
 							iWidth: 80,
 							sWidthUnit: "px",
+							oAggregationConstructor: Input,
 							fnDataAccessor: function (oData) {
 								return oData["data"][i];
 							},

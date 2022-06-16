@@ -2,7 +2,7 @@
 // eslint-disable-next-line no-undef
 sap.ui.define(["sap/ui/base/Object"], function (UI5Object) {
 	return UI5Object.extend("TableCell", {
-		constructor: function ({ element, rowElement, vValue, sId, iWidth, sWidthUnit, iColumn, iRow, tBodyRef, oRow, oColumn, oAggregation }) {
+		constructor: function ({ element, rowElement, vValue, sId, iWidth, sWidthUnit, iColumn, iRow, tBodyRef, oRow, oColumn, fnAggregationConstructor }) {
 			this._sId = sId;
 			this._vValue = vValue;
 			this._oDomRef = element;
@@ -14,7 +14,7 @@ sap.ui.define(["sap/ui/base/Object"], function (UI5Object) {
 			this._iColumn = iColumn;
 			this._oColumn = oColumn;
 			this._tBodyRef = tBodyRef;
-			this._oAggregation = oAggregation;
+			this._oAggregation = this.initAggregation(fnAggregationConstructor);
 		},
 
 		getDisplayedValue: function () {
@@ -22,6 +22,7 @@ sap.ui.define(["sap/ui/base/Object"], function (UI5Object) {
 		},
 
 		setDisplayedValue: function (vValue, bUpdateUnderhoodValue) {
+			return;
 			this.getDomRef().innerHTML = vValue;
 			if (bUpdateUnderhoodValue) {
 				this.setUnderhoodValue(vValue, false);
@@ -33,6 +34,7 @@ sap.ui.define(["sap/ui/base/Object"], function (UI5Object) {
 		},
 
 		setUnderhoodValue: function (vValue, bUpdateDisplayedValue) {
+			return;
 			this._vValue = vValue;
 			if (bUpdateDisplayedValue) {
 				this.setDisplayedValue(vValue, false);
@@ -127,6 +129,20 @@ sap.ui.define(["sap/ui/base/Object"], function (UI5Object) {
 		setAggregation: function (oValue) {
 			this._oAggregation = oValue;
 			return this;
+		},
+
+		initAggregation: function (oAggregationConstructor) {
+			if (!oAggregationConstructor) {
+				return;
+			}
+
+			const oAggregation = new oAggregationConstructor({ oParent: this, iWidth: this._iWidth, sWidthUnits: this._sWidthUnit });
+
+			return oAggregation;
+		},
+
+		renderAggregation: function () {
+			this._oAggregation?.render?.();
 		},
 	});
 });
