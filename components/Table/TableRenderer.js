@@ -72,7 +72,9 @@ sap.ui.define(["sap/ui/core/Renderer", "./TableBodyCell", "./TableHeaderCell", "
 			headerTBody: $TableHeaderBody,
 			bodyScrollContainer: $TableBodyScrollContainer,
 			verticalBar: $VerticalScrollBar,
+			verticalBarScrollContainer: $VerticalScrollDiv,
 			horizontalBar: $HorizontalScrollBar,
+			horizontalBarContainer: $HorizontalScrollDiv,
 		};
 	};
 

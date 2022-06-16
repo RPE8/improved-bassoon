@@ -1,7 +1,7 @@
 /* global sap*/
 sap.ui.define(
-	["sap/ui/core/Control", "./TableRenderer", "./TableHeaderRow", "./TableDataRow", "./Column", "./TableCell"],
-	function (Control, TableRenderer, TableHeaderRow, TableDataRow, Column, TableCell) {
+	["sap/ui/core/Control", "./TableRenderer", "./TableHeaderRow", "./TableDataRow", "./Column", "./TableCell", "./ScrollBar"],
+	function (Control, TableRenderer, TableHeaderRow, TableDataRow, Column, TableCell, ScrollBar) {
 		return Control.extend("Table", {
 			init: function () {
 				this.aColumns = [];
@@ -157,6 +157,17 @@ sap.ui.define(
 				// this.$VerticalScrollBar.style.top = `${this.iRows * (this.oDataRowToTableRow[aKeys.length - 1] - this.iVisibleRowsCount) / 100}%`;
 			},
 
+			simulateMouseWheel: function (bUp) {
+				const event = new MouseEvent("wheel", {
+					view: window,
+					bubbles: false,
+					cancelable: false,
+				});
+
+				event.deltaY = bUp ? 1 : -1;
+				this.$TABLE.dispatchEvent(event);
+			},
+
 			onScrollBarMouseDownHandler: function (event) {
 				console.log(event);
 			},
@@ -210,7 +221,7 @@ sap.ui.define(
 						});
 					},
 					{
-						root: this.$TableBody,
+						root: this.$TableBodyScrollContainer,
 					}
 				);
 
@@ -383,85 +394,7 @@ sap.ui.define(
 				return aTrs;
 			},
 
-			populateTableWithData: function () {
-				// const iHeaders = this.iColumnHeaderRows;
-				// for (let i = 0; i < iHeaders; i++) {
-				//   const tr = document.createElement('tr');
-				//   const aTds = [];
-				//   for (let j = 0; j < iColumns; j++) {
-				//     const sId = oIdGenerator.next().value;
-				//     const td = document.createElement('td');
-				//     td.setAttribute("id", sId);
-				//     const sData = `${i}:${j}`;
-				//     tr.appendChild(td);
-				//     const oCell = new TableHeaderCell({
-				//       element: td,
-				//       rowElement: tr,
-				//       sId: sId,
-				//       // Values is hardcoded
-				//       iWidth: 42,
-				//       sWidthUnit: "px",
-				//       iColumn: j,
-				//       iRow: i,
-				//       tBodyRef: $TableBody,
-				//       vValue: sData
-				//     });
-				//     mHeaderTdsById.set(sId, oCell);
-				//   }
-				//   aHeaderRows.push(new TableRow({
-				//     sId: oIdGenerator.next().value,
-				//     element: tr,
-				//     aTds,
-				//     tBody: $TableHeaderBody,
-				//     iRow: i
-				//   }))
-				//   $TableHeaderBody.appendChild(tr);
-				// };
-				// const aTableData = oControl.getData();
-				// const iRows = oControl.getVisibleRows();
-				// const aRows = [];
-				// const mTdsById = new Map();
-				// for (let i = 0; i < iRows; i++) {
-				//   const aData = aTableData[i];
-				//   const tr = document.createElement('tr');
-				//   tr.setAttribute("data-row", i);
-				//   const aRow = [];
-				//   const aTds = [];
-				//   aData.forEach((sData, j) => {
-				//     const sId = oIdGenerator.next().value;
-				//     const td = document.createElement('td');
-				//     td.setAttribute("id", sId);
-				//     oObserver.observe(td);
-				//     // td.innerHTML = sData;
-				//     // td.innerHTML = `<input style='width:${20}px;' value='HEADER ${sData}'>`;
-				//     tr.appendChild(td);
-				//     const oCell = new TableBodyCell({
-				//       element: td,
-				//       rowElement: tr,
-				//       sId: sId,
-				//       // Values is hardcoded
-				//       iWidth: 42,
-				//       sWidthUnit: "px",
-				//       iColumn: j,
-				//       iRow: i,
-				//       tBodyRef: $TableBody,
-				//       scrollContainerRef: $TableBodyScrollContainer,
-				//       vValue: sData
-				//     });
-				//     mTdsById.set(sId, oCell);
-				//     aTds.push(oCell);
-				//   });
-				//   aHeaderRows.push(new TableRow({
-				//     sId: oIdGenerator.next().value,
-				//     element: tr,
-				//     aTds,
-				//     tBody: $TableBody,
-				//     iRow: i
-				//   }));
-				//   $TBody.appendChild(tr);
-				//   aRows.push(aRow);
-				// }
-			},
+			populateTableWithData: function () {},
 
 			createTableDataObject: function () {
 				// const aData = this.aData;
@@ -472,10 +405,20 @@ sap.ui.define(
 			createTable() {
 				const $TABLE = (this.$TABLE = document.getElementById("TABLE"));
 
-				const onMouseMove = (this.onScrollMouseMove = (oEvent) => {
+				const onYMouseMove = (this.onYScrollMouseMove = (oEvent) => {
 					// prevents text selection
 					this.pauseEvent(oEvent);
 					console.log(oEvent);
+					if (oEvent.screenY < oVerticalScrollbar.getPreviousY()) {
+						console.log("up");
+						this.simulateMouseWheel(false);
+						oVerticalScrollbar.setPreviousY(oEvent.screenY);
+					} else if (oEvent.screenY > oVerticalScrollbar.getPreviousY()) {
+						this.simulateMouseWheel(true);
+						console.log("down");
+
+						oVerticalScrollbar.setPreviousY(oEvent.screenY);
+					}
 				});
 
 				if (this._fnCurrWheelHandler) {
@@ -485,9 +428,10 @@ sap.ui.define(
 					this.onWheelHandler(oEvent);
 				});
 
-				const { bodyTBody, headerTBody, bodyScrollContainer, table, headerTable, verticalBar, horizontalBar } = TableRenderer.renderTable({
-					oContext: this,
-				});
+				const { bodyTBody, headerTBody, bodyScrollContainer, table, headerTable, verticalBar, verticalBarScrollContainer, horizontalBar, horizontalBarScrollContainer } =
+					TableRenderer.renderTable({
+						oContext: this,
+					});
 				$TABLE.addEventListener("wheel", onWheelHandler);
 
 				this.$TableBodyScrollContainer = bodyScrollContainer;
@@ -495,6 +439,23 @@ sap.ui.define(
 				this.$TableBody = bodyTBody;
 				this.$DataTable = table;
 				this.$HeaderTable = headerTable;
+
+				const oVerticalScrollbar = (this.oVerticalScrollbar = new ScrollBar({
+					bVertical: true,
+					BarContainerDomRef: verticalBarScrollContainer,
+					BarDomRef: verticalBar,
+				}));
+
+				const oVerticalBar = oVerticalScrollbar.getBarDomRef();
+
+				const oHorizontalScrollbar = (this.oHorizontalScrollbar = new ScrollBar({
+					bHorizontal: true,
+					BarContainerDomRef: horizontalBarScrollContainer,
+					BarDomRef: horizontalBar,
+				}));
+
+				const oHorizontalBar = oHorizontalScrollbar.getBarDomRef();
+
 				this.$VerticalScrollBar = verticalBar;
 				this.$HorizontalScrollBar = horizontalBar;
 
@@ -508,20 +469,20 @@ sap.ui.define(
 
 				const onMouseUp = (this._fnCurrVScrollBarMouseUpHandler = (oEvent, oEvent2) => {
 					this._bScroll = false;
-					$TABLE.removeEventListener("mousemove", onMouseMove);
+					$TABLE.removeEventListener("mousemove", onYMouseMove);
 					$TABLE.removeEventListener("mouseup", onMouseUp);
 					this.onScrollBarMouseUpHandler(oEvent, oEvent2);
 				});
 
 				const onMouseDown = (this._fnCurrVScrollBarMouseDownHandler = (oEvent, oEvent2) => {
 					this._bScroll = true;
-					$TABLE.addEventListener("mousemove", onMouseMove);
+					$TABLE.addEventListener("mousemove", onYMouseMove);
 					$TABLE.addEventListener("mouseup", onMouseUp);
 					this.onScrollBarMouseDownHandler(oEvent, oEvent2);
 				});
 
-				this.$VerticalScrollBar.addEventListener("mousedown", onMouseDown);
-				this.$VerticalScrollBar.addEventListener("mouseup", onMouseUp);
+				oVerticalBar.addEventListener("mousedown", onMouseDown);
+				oVerticalBar.addEventListener("mouseup", onMouseUp);
 				// const oColumn = new Column({
 				//   sId: this.oIdColumnsGenerator.next().value
 				// });
