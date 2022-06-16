@@ -1,7 +1,7 @@
 /* global sap*/
 sap.ui.define(
-	["sap/ui/core/Control", "./TableRenderer", "./TableHeaderRow", "./TableDataRow", "./Column", "./TableCell", "./ScrollBar"],
-	function (Control, TableRenderer, TableHeaderRow, TableDataRow, Column, TableCell, ScrollBar) {
+	["sap/ui/core/Control", "./TableRenderer", "./TableHeaderRow", "./TableDataRow", "./TableRowTh", "./Column", "./TableCell", "./TableCellTh", "./ScrollBar"],
+	function (Control, TableRenderer, TableHeaderRow, TableDataRow, TableRowTh, Column, TableCell, TableCellTh, ScrollBar) {
 		return Control.extend("Table", {
 			init: function () {
 				this.aColumns = [];
@@ -19,6 +19,7 @@ sap.ui.define(
 				this.iCurrentLastRow = this.iVisibleRowsCount - 1;
 				this.oIntersectionObserver = null;
 				this.aRows = [];
+				this.aRowsTh = [];
 				this.aCells = [];
 				this.aHeaderRow = [];
 				this.aDataRow = [];
@@ -341,6 +342,52 @@ sap.ui.define(
 
 				const iRows = this.iVisibleRowsCount;
 
+				const sRowThId = this.oIdRowGenerator.next().value;
+				const oRowTh = new TableRowTh({
+					sId: sRowThId,
+				});
+				this.mRowsById.set(sRowThId, oRowTh);
+				this.aRows.push(oRowTh);
+				const $TrTh = TableRenderer.createElement("tr", [], [["id", sRowThId]]);
+				oRowTh.setDomRef($TrTh);
+
+				aColumns.forEach((oColumn, iColumn) => {
+					debugger;
+					const sCellId = this.oIdCellGenerator.next().value;
+					oColumn.setColumnIndex(iColumn);
+					const oCell = new TableCellTh({
+						// eslint-disable-line
+						sId: sCellId,
+						iColumn,
+						oColumn,
+						iRow: undefined,
+						oRowTh,
+						iWidth: oColumn.getWidth(),
+						sWidthUnit: oColumn.getWidthUnit(),
+					});
+					oRowTh.addCell(oCell);
+
+					const $Th = TableRenderer.createElement(
+						"th",
+						[],
+						[
+							["id", sCellId],
+							// ["width", oColumn.getWidth()],
+							["style", `width:${oColumn.getWidth()}${oColumn.getWidthUnit()}`],
+						]
+					);
+					this.mCellsById.set(sCellId, oCell);
+					// $Td.innerHTML = (oColumn.getDataAccessor())(this.aData[i]);
+					// this.oIntersectionObserver.observe($Th);
+					aHeaderTds.push($Th);
+					$TrTh.appendChild($Th);
+					oColumn.addHeaderCell(oCell);
+					oCell.setDomRef($Th);
+					oCell.setRowDomRef($TrTh);
+				});
+
+				aTrs.push($TrTh);
+
 				for (let i = 0; i < iRows; i++) {
 					const sRowId = this.oIdRowGenerator.next().value;
 					const $Tr = TableRenderer.createElement("tr", [], [["id", sRowId]]);
@@ -375,7 +422,7 @@ sap.ui.define(
 							[],
 							[
 								["id", sCellId],
-								["width", oColumn.getWidth()],
+								// ["width", oColumn.getWidth()],
 							]
 						);
 						this.mCellsById.set(sCellId, oCell);

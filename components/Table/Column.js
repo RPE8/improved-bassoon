@@ -84,12 +84,12 @@ sap.ui.define(["sap/ui/base/Object"], function (Object) {
 		},
 
 		setWidthUnit: function (sValue) {
-			this._iWidthUnit = sValue;
+			this._sWidthUnit = sValue;
 			return this;
 		},
 
 		getWidthUnit: function () {
-			return this._iWidthUnit;
+			return this._sWidthUnit;
 		},
 
 		setRenderedWidth: function (iValue) {

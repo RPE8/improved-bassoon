@@ -15,6 +15,12 @@ td {
 	border-spacing: 0px;
 }
 
+th {
+	box-sizing: border-box;
+	padding: 0px;
+	border-spacing: 0px;
+}
+
 .tableBodyScrollWrapper {
 	display: grid;
 	grid-template-columns: calc(100% - 13px) 13px;
