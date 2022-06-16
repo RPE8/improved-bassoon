@@ -3,6 +3,7 @@ sap.ui.define(
 	[
 		// eslint-disable-line
 		"sap/ui/core/mvc/Controller",
+		"../components/Input/Input",
 	],
 	function (Controller) {
 		"use strict";
