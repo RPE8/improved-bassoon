@@ -2,7 +2,7 @@
 // eslint-disable-next-line no-undef
 sap.ui.define(["sap/ui/base/Object"], function (UI5Object) {
 	return UI5Object.extend("TableCell", {
-		constructor: function ({ element, rowElement, vValue, sId, iWidth, sWidthUnit, iColumn, iRow, tBodyRef, oRow, oColumn }) {
+		constructor: function ({ element, rowElement, vValue, sId, iWidth, sWidthUnit, iColumn, iRow, tBodyRef, oRow, oColumn, oAggregation }) {
 			this._sId = sId;
 			this._vValue = vValue;
 			this._oDomRef = element;
@@ -14,6 +14,7 @@ sap.ui.define(["sap/ui/base/Object"], function (UI5Object) {
 			this._iColumn = iColumn;
 			this._oColumn = oColumn;
 			this._tBodyRef = tBodyRef;
+			this._oAggregation = oAggregation;
 		},
 
 		getDisplayedValue: function () {
@@ -116,6 +117,15 @@ sap.ui.define(["sap/ui/base/Object"], function (UI5Object) {
 
 		setRow: function (oValue) {
 			this._oRow = oValue;
+			return this;
+		},
+
+		getAggregation: function () {
+			return this._oAggregation;
+		},
+
+		setAggregation: function (oValue) {
+			this._oAggregation = oValue;
 			return this;
 		},
 	});

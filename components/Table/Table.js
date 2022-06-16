@@ -20,9 +20,9 @@ sap.ui.define(
 				this.oIntersectionObserver = null;
 				this.aRows = [];
 				this.aRowsTh = [];
-				this.aCells = [];
 				this.aHeaderRow = [];
 				this.aDataRow = [];
+				this._oUtilRows = {};
 				this.mCellsById = new Map();
 				this.mRowsById = new Map();
 
@@ -45,6 +45,11 @@ sap.ui.define(
 				this.oIdColumnsGenerator = (function* idMaker() {
 					let index = 0;
 					while (true) yield `${sTableId}-Column-${index++}`;
+				})();
+
+				this.oRowSequenceNumberGenerator = (function* idMaker() {
+					let index = 0;
+					while (true) yield index++;
 				})();
 
 				this.aColumns2BeCreated = [];
@@ -202,6 +207,7 @@ sap.ui.define(
 				this.aRows = [];
 				this.aHeaderRows = [];
 				this.aDataRows = [];
+				this.oUtilRows = {};
 				this.mRowsById.clear();
 				this.mCellsById.clear();
 
@@ -225,7 +231,7 @@ sap.ui.define(
 						root: this.$TableBodyScrollContainer,
 					}
 				);
-
+				const $HeaderThRow = this.createUtilThRow({ aAdditionalTrClasses: "thRow headerThRow", aAdditionalThClasses: "headerThCell" });
 				const aHeaderRows = this.createHeadersRows();
 				let iBodyWidth = 0;
 				if (this.aColumns && this.aColumns.length) {
@@ -233,13 +239,13 @@ sap.ui.define(
 				}
 				this.$HeaderTable.setAttribute("width", iBodyWidth);
 				this.$HeaderTable.setAttribute("cols", this.aColumns.length ?? 0);
-				this.$TableHeaderBody.replaceChildren(...aHeaderRows);
+				this.$TableHeaderBody.replaceChildren($HeaderThRow, ...aHeaderRows);
+				const $DataThRow = this.createUtilThRow({ aAdditionalTrClasses: "thRow dataThRow", aAdditionalThClasses: "dataThCell" });
 				const aRows = this.createDataRows();
-
 				// this.$TableBody.setAttribute("width", iBodyWidth);
 				this.$DataTable.setAttribute("width", iBodyWidth);
 				this.$DataTable.setAttribute("cols", this.aColumns.length ?? 0);
-				this.$TableBody.replaceChildren(...aRows);
+				this.$TableBody.replaceChildren($DataThRow, ...aRows);
 
 				const oRect = this.$TableBodyScrollContainer.getBoundingClientRect();
 				this.iTableBodyScrollContainerWidth = oRect.width;
@@ -259,8 +265,6 @@ sap.ui.define(
 
 			createHeadersRows: function () {
 				const aColumns = this.aColumns;
-				const aHeaderTrs = [];
-				const aHeaderTds = [];
 				const iHeadersAmount = this.iColumnHeaderRows;
 				const aTrs = [];
 
@@ -321,38 +325,36 @@ sap.ui.define(
 						// oCell.setDisplayedValue(oHeader?.text || "", true);
 
 						$Td.innerHTML = oHeader?.text || "";
-						aHeaderTds.push($Td);
 						$Tr.appendChild($Td);
 						oColumn.addHeaderCell(oCell);
 						oCell.setDomRef($Td);
 						oCell.setRowDomRef($Tr);
 					});
 
-					aHeaderTrs.push(aHeaderTds);
 					aTrs.push($Tr);
 				}
 
 				return aTrs;
 			},
 
-			createDataRows: function () {
+			createUtilThRow: function ({ sAdditionalTrClasses = "", sAdditionalThClasses = "" }) {
 				const aColumns = this.aColumns;
-				const aHeaderTds = [];
-				const aTrs = [];
-
-				const iRows = this.iVisibleRowsCount;
-
 				const sRowThId = this.oIdRowGenerator.next().value;
+
 				const oRowTh = new TableRowTh({
 					sId: sRowThId,
 				});
+
 				this.mRowsById.set(sRowThId, oRowTh);
 				this.aRows.push(oRowTh);
-				const $TrTh = TableRenderer.createElement("tr", [], [["id", sRowThId]]);
+
+				const $TrTh = TableRenderer.createElement("tr", `"thRow ${sAdditionalTrClasses}"`, [
+					["id", sRowThId],
+					["style", " height: 0px"],
+				]);
 				oRowTh.setDomRef($TrTh);
 
 				aColumns.forEach((oColumn, iColumn) => {
-					debugger;
 					const sCellId = this.oIdCellGenerator.next().value;
 					oColumn.setColumnIndex(iColumn);
 					const oCell = new TableCellTh({
@@ -367,26 +369,28 @@ sap.ui.define(
 					});
 					oRowTh.addCell(oCell);
 
-					const $Th = TableRenderer.createElement(
-						"th",
-						[],
-						[
-							["id", sCellId],
-							// ["width", oColumn.getWidth()],
-							["style", `width:${oColumn.getWidth()}${oColumn.getWidthUnit()}`],
-						]
-					);
+					const $Th = TableRenderer.createElement("th", `"thCell ${sAdditionalThClasses}"`, [
+						["id", sCellId],
+						// ["width", oColumn.getWidth()],
+						["style", `width:${oColumn.getWidth()}${oColumn.getWidthUnit()};`],
+					]);
 					this.mCellsById.set(sCellId, oCell);
-					// $Td.innerHTML = (oColumn.getDataAccessor())(this.aData[i]);
-					// this.oIntersectionObserver.observe($Th);
-					aHeaderTds.push($Th);
 					$TrTh.appendChild($Th);
 					oColumn.addHeaderCell(oCell);
 					oCell.setDomRef($Th);
 					oCell.setRowDomRef($TrTh);
 				});
 
-				aTrs.push($TrTh);
+				this.addUtilRow("ths", oRowTh);
+				return $TrTh;
+			},
+
+			createDataRows: function () {
+				const aColumns = this.aColumns;
+				const aTrs = [];
+
+				const iRows = this.iVisibleRowsCount;
+				// TODO: Move to separate method
 
 				for (let i = 0; i < iRows; i++) {
 					const sRowId = this.oIdRowGenerator.next().value;
@@ -428,9 +432,8 @@ sap.ui.define(
 						this.mCellsById.set(sCellId, oCell);
 						// $Td.innerHTML = (oColumn.getDataAccessor())(this.aData[i]);
 						this.oIntersectionObserver.observe($Td);
-						aHeaderTds.push($Td);
 						$Tr.appendChild($Td);
-						oColumn.addHeaderCell(oCell);
+						oColumn.addDataCells(oCell);
 						oCell.setDomRef($Td);
 						oCell.setRowDomRef($Tr);
 					});
@@ -553,6 +556,27 @@ sap.ui.define(
 
 			getTrById: function (sId) {
 				return this.getRowById(sId)?.getDomRef();
+			},
+
+			setUtilRows: function (oValue) {
+				this._oUtilRows = oValue;
+				return this;
+			},
+
+			getUtilRows: function () {
+				return this._oUtilRows;
+			},
+
+			addUtilRow: function (sType, oValue) {
+				if (!(sType in this._oUtilRows)) {
+					this._oUtilRows[sType] = [];
+				}
+
+				this._oUtilRows[sType].push(oValue);
+			},
+
+			getUtilRowsByType: function (sType) {
+				return this._oUtilRows[sType];
 			},
 
 			isInViewport: (element) => {
