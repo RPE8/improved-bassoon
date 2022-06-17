@@ -1,6 +1,16 @@
 /* global sap*/
 sap.ui.define(
-	["sap/ui/core/Control", "./TableRenderer", "./Row/TableHeaderRow", "./Row/TableDataRow", "./Row/TableRowTh", "./Column", "./TableCell", "./TableCellTh", "./ScrollBar"],
+	[
+		"sap/ui/core/Control",
+		"./TableRenderer",
+		"./Row/TableHeaderRow",
+		"./Row/TableDataRow",
+		"./Row/TableRowTh",
+		"./Column/Column",
+		"./Cell/TableCell",
+		"./Cell/TableCellTh",
+		"./ScrollBar",
+	],
 	function (Control, TableRenderer, TableHeaderRow, TableDataRow, TableRowTh, Column, TableCell, TableCellTh, ScrollBar) {
 		return Control.extend("Table", {
 			init: function () {
@@ -17,12 +27,9 @@ sap.ui.define(
 				}
 				this.iCurrentFirstRow = 0;
 				this.iCurrentLastRow = this.iVisibleRowsCount - 1;
-				this.oIntersectionObserver = null;
-				this.aRows = [];
-				this.aRowsTh = [];
-				this.aHeaderRow = [];
-				this.aDataRow = [];
-				this._oUtilRows = {};
+
+				this.oObservers = this.initObservers();
+				this.oRows = this.initRows();
 				this.mCellsById = new Map();
 				this.mRowsById = new Map();
 
@@ -31,40 +38,92 @@ sap.ui.define(
 
 				this.aData = this.createData();
 
-				const sTableId = "Table";
-				this.oIdRowGenerator = (function* idMaker() {
-					let index = 0;
-					while (true) yield `${sTableId}-Row-${index++}`;
-				})();
-
-				this.oIdCellGenerator = (function* idMaker() {
-					let index = 0;
-					while (true) yield `${sTableId}-Cell-${index++}`;
-				})();
-
-				this.oIdColumnsGenerator = (function* idMaker() {
-					let index = 0;
-					while (true) yield `${sTableId}-Column-${index++}`;
-				})();
-
-				this.oRowSequenceNumberGenerator = (function* idMaker() {
-					let index = 0;
-					while (true) yield index++;
-				})();
+				const sTableId = this.getId();
+				this.oGenerators = this.initGenerators(sTableId);
 
 				this.aColumns2BeCreated = [];
 			},
 
-			getHeaderRowsCount() {
-				return this.iColumnHeaderRows;
+			initGenerators(sId) {
+				return {
+					cellId: (function* () {
+						let index = 0;
+						while (true) yield `${sId}-Cell-${index++}`;
+					})(),
+					columnId: (function* () {
+						let index = 0;
+						while (true) yield `${sId}-Column-${index++}`;
+					})(),
+					rowId: (function* () {
+						let index = 0;
+						while (true) yield `${sId}-Row-${index++}`;
+					})(),
+					rowIndex: (function* () {
+						let index = 0;
+						while (true) yield index++;
+					})(),
+				};
 			},
 
-			getColumnsCount() {
-				return this.iColumns;
+			initObservers() {
+				const oObservers = {};
+				return oObservers;
 			},
 
-			getVisibleRows() {
-				return this.iVisibleRowsCount;
+			_initDataPartIntersectionObserver({ oObservers, $root, fnCallback }) {
+				const _sIntersectionObserverPath = "dataPartIntersection";
+
+				fnCallback =
+					fnCallback ||
+					function (entries) {
+						entries.forEach((entry) => {
+							const target = entry.target;
+							const sId = target.getAttribute("id");
+							const oCell = this.getCellById(sId);
+							const iRow = oCell.getRowIndex();
+							const iDataRow = this.oDataRowToTableRow[iRow];
+							const sValue = oCell.getColumn().getDataAccessor()(this.aData[iDataRow]);
+
+							if (oCell.getDisplayedValue() !== sValue) {
+								oCell.setDisplayedValue(sValue, true);
+							}
+						});
+					}.bind(this);
+
+				const oObserver = new IntersectionObserver(fnCallback, {
+					root: $root,
+				});
+
+				this.getIntersectionObserver = () => {
+					return oObservers[_sIntersectionObserverPath];
+				};
+				this.setIntersectionObserver = (oData) => {
+					oObservers[_sIntersectionObserverPath] = oData;
+					return this;
+				};
+				this.removeIntersectionObserver = () => {
+					delete oObservers[_sIntersectionObserverPath];
+					return this;
+				};
+				this.destroyIntersectionObserver = () => {
+					oObservers[_sIntersectionObserverPath].disconnect();
+					delete oObservers[_sIntersectionObserverPath];
+					return this;
+				};
+
+				return oObserver;
+			},
+
+			initRows: function () {
+				const oRows = {
+					dataRows: [],
+					headersRows: [],
+					allRows: [],
+					headersThRows: [],
+					dataThRows: [],
+				};
+
+				return oRows;
 			},
 
 			createData() {
@@ -86,7 +145,7 @@ sap.ui.define(
 				return this.aData;
 			},
 
-			_reassigneRowsDataAccordingToDataRow2TableRow: function () {
+			_reassigneRowsDataAccordingToDataRow2TableRow() {
 				let iBorderWidth = 0;
 				let iLastTdIndex = null;
 
@@ -204,6 +263,17 @@ sap.ui.define(
 				this.aColumns.push(oColumn2BeCreated);
 			},
 
+			clearTable: function () {
+				this.oIntersectionObserver?.disconnect();
+				this.mCellsById?.clear();
+				this.mRowsById?.clear();
+				this.aRows = [];
+				this.aHeaderRows = [];
+				this.aDataRows = [];
+				this.oUtilRows = {};
+			},
+
+			// Rerender whole table
 			createColumns: function () {
 				this.aRows = [];
 				this.aHeaderRows = [];
@@ -271,8 +341,6 @@ sap.ui.define(
 
 				for (let i = 0; i < iHeadersAmount; i++) {
 					const sRowId = this.oIdRowGenerator.next().value;
-
-					// const $Tr = TableRenderer.createElement("tr", [], [["id", sRowId]]);
 
 					const oRow = new TableHeaderRow({
 						sId: sRowId,
@@ -572,13 +640,96 @@ sap.ui.define(
 				return this.getRowById(sId)?.getDomRef();
 			},
 
+			getHeaderRowsCount() {
+				return this.iColumnHeaderRows;
+			},
+
+			getColumnsCount() {
+				return this.iColumns;
+			},
+
+			getVisibleRows() {
+				return this.iVisibleRowsCount;
+			},
+
 			setUtilRows: function (oValue) {
 				this._oUtilRows = oValue;
 				return this;
 			},
 
-			getUtilRows: function () {
-				return this._oUtilRows;
+			getRows: function () {
+				return this.oRows;
+			},
+
+			setRows: function (oData) {
+				this.oRows = oData;
+				return this;
+			},
+
+			addRows: function (sName, aData) {
+				if (!this.oRows[sName]) {
+					this.oRows[sName] = [];
+				}
+				this.oRows[sName] = [...this.oRows[sName], ...aData];
+				return this;
+			},
+
+			removeRows: function (sName) {
+				delete this.oRows[sName];
+				return this;
+			},
+
+			clearRows: function () {
+				this.oRows = {};
+				return this;
+			},
+
+			getObservers: function () {
+				return this.oObservers;
+			},
+
+			setObservers: function (oData) {
+				this.oObservers = oData;
+				return this;
+			},
+
+			addObserver: function (sName, oData) {
+				this.oObservers[sName] = oData;
+				return this;
+			},
+
+			removeObserver: function (sName) {
+				delete this.oObservers[sName];
+				return this;
+			},
+
+			clearObservers: function () {
+				this.oObservers = {};
+				return this;
+			},
+
+			getGenerators: function () {
+				return this.oGenerators;
+			},
+
+			setGenerators: function (oData) {
+				this.oGenerators = oData;
+				return this;
+			},
+
+			addGenerator: function (sName, oData) {
+				this.oGenerators[sName] = oData;
+				return this;
+			},
+
+			removeGenerator: function (sName) {
+				delete this.oGenerators[sName];
+				return this;
+			},
+
+			clearGenerator: function () {
+				this.oGenerators = {};
+				return this;
 			},
 
 			addUtilRow: function (sType, oValue) {

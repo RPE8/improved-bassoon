@@ -1,5 +1,5 @@
 // eslint-disable-next-line no-undef
-sap.ui.define(["../Renderer/Renderer"], function (Renderer) {
+sap.ui.define(["../../Renderer/Renderer"], function (Renderer) {
 	"use strict";
 
 	const oRenderer = new Renderer();
