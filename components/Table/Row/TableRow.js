@@ -65,10 +65,12 @@ sap.ui.define(["sap/ui/base/Object", "./TableRowRenderer"], function (Object, Re
 			const $element = this.createStandaloneHTMLRepresentation({ sId, aClasses, aAttributes, bAssignToDomRef: false });
 			if (bAssignToDomRef) this._oDomRef = $element;
 
-			const oAggregation = this.initAggregation();
-			if (bAssignToAggregation) this.this._oAggregation = oAggregation;
+			const aCells = this._aCells;
 
-			this.renderer.addChild(oAggregation?.createStandaloneHTMLRepresentation());
+			aCells.forEach((oCell) => {
+				const $element = oCell.createFullfiledHTMLRepresentation();
+				this.renderer.addChild($element);
+			});
 
 			return $element;
 		},
