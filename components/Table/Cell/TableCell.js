@@ -1,11 +1,11 @@
 // TODO: To prorotype
 // eslint-disable-next-line no-undef
-sap.ui.define(["sap/ui/base/Object"], function (UI5Object) {
+sap.ui.define(["sap/ui/base/Object", "./TableCellRenderer"], function (UI5Object, Renderer) {
 	return UI5Object.extend("TableCell", {
-		constructor: function ({ element, rowElement, vValue, sId, iWidth, sWidthUnit, iColumn, iRow, tBodyRef, oRow, oColumn, fnAggregationConstructor }) {
+		constructor: function ({ rowElement, vValue, sId, iWidth, sWidthUnit, iColumn, iRow, tBodyRef, oRow, oColumn, fnAggregationConstructor }) {
 			this._sId = sId;
 			this._vValue = vValue;
-			this._oDomRef = element;
+			this._oDomRef = undefined;
 			this._iRow = iRow;
 			this._oRow = oRow;
 			this._oRowDomRef = rowElement;
@@ -14,7 +14,8 @@ sap.ui.define(["sap/ui/base/Object"], function (UI5Object) {
 			this._iColumn = iColumn;
 			this._oColumn = oColumn;
 			this._tBodyRef = tBodyRef;
-			this._oAggregation = this.initAggregation(fnAggregationConstructor);
+			this._fnAggregationConstructor = fnAggregationConstructor;
+			this._oAggregation = undefined;
 		},
 
 		getDisplayedValue: function () {
@@ -23,10 +24,10 @@ sap.ui.define(["sap/ui/base/Object"], function (UI5Object) {
 
 		setDisplayedValue: function (vValue, bUpdateUnderhoodValue) {
 			return;
-			this.getDomRef().innerHTML = vValue;
-			if (bUpdateUnderhoodValue) {
-				this.setUnderhoodValue(vValue, false);
-			}
+			// this.getDomRef().innerHTML = vValue;
+			// if (bUpdateUnderhoodValue) {
+			// 	this.setUnderhoodValue(vValue, false);
+			// }
 		},
 
 		getUnderhoodValue: function () {
@@ -35,10 +36,10 @@ sap.ui.define(["sap/ui/base/Object"], function (UI5Object) {
 
 		setUnderhoodValue: function (vValue, bUpdateDisplayedValue) {
 			return;
-			this._vValue = vValue;
-			if (bUpdateDisplayedValue) {
-				this.setDisplayedValue(vValue, false);
-			}
+			// this._vValue = vValue;
+			// if (bUpdateDisplayedValue) {
+			// 	this.setDisplayedValue(vValue, false);
+			// }
 		},
 
 		setId: function (sValue) {
@@ -131,18 +132,58 @@ sap.ui.define(["sap/ui/base/Object"], function (UI5Object) {
 			return this;
 		},
 
-		initAggregation: function (oAggregationConstructor) {
-			if (!oAggregationConstructor) {
+		initAggregation: function (fnAggregationConstructor, bForce) {
+			if (!fnAggregationConstructor) {
 				return;
 			}
 
-			const oAggregation = new oAggregationConstructor({ oParent: this, iWidth: this._iWidth, sWidthUnits: this._sWidthUnit });
+			if (this._oAggregation && !bForce) {
+				return this._oAggregation;
+			}
+
+			const oAggregation = (this._oAggregation = new fnAggregationConstructor({ oParent: this, iWidth: this._iWidth, sWidthUnits: this._sWidthUnit }));
 
 			return oAggregation;
 		},
 
-		renderAggregation: function () {
-			this._oAggregation?.render?.();
+		createStandaloneHTMLRepresentation: function ({
+			bAssignToDomRef = true,
+			sId = this._sId,
+			aClasses = [],
+			aAttributes = [
+				["id", sId],
+				["style", `width:${this._iWidth}${this._sWidthUnits};max-width:${this._iWidth}${this._sWidthUnits}`],
+			],
+		}) {
+			const $element = this.renderer.createHTMLElement({
+				aClasses,
+				aAttributes,
+			});
+			if (bAssignToDomRef) this._oDomRef = $element;
+			return $element;
 		},
+
+		createFullfiledHTMLRepresentation: function ({
+			bAssignToDomRef = true,
+			bAssignToAggregation = true,
+			sId = this._sId,
+			aClasses = [],
+			aAttributes = [
+				["id", sId],
+				["style", `width:${this._iWidth}${this._sWidthUnits};max-width:${this._iWidth}${this._sWidthUnits}`],
+			],
+		}) {
+			const $element = this.createStandaloneHTMLRepresentation({ sId, aClasses, aAttributes, bAssignToDomRef: false });
+			if (bAssignToDomRef) this._oDomRef = $element;
+
+			const oAggregation = this.initAggregation();
+			if (bAssignToAggregation) this.this._oAggregation = oAggregation;
+
+			this.renderer.addChild(oAggregation?.createStandaloneHTMLRepresentation());
+
+			return $element;
+		},
+
+		renderer: Renderer,
 	});
 });

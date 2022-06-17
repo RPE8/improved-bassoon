@@ -1,6 +1,6 @@
 // TODO: To prorotype
 // eslint-disable-next-line no-undef
-sap.ui.define(["sap/ui/core/Control", "./InputRenderer"], function (Control, InputRenderer) {
+sap.ui.define(["sap/ui/core/Control", "./InputRenderer"], function (Control, Renderer) {
 	return Control.extend("Input", {
 		constructor: function ({ sId, element, oParent, iWidth, sWidthUnits }) {
 			this._sId = sId;
@@ -35,11 +35,23 @@ sap.ui.define(["sap/ui/core/Control", "./InputRenderer"], function (Control, Inp
 			return this._oValues[sType];
 		},
 
-		render: function () {
-			this._oDomRef = InputRenderer.render({ iWidth: this._iWidth, sWidthUnits: this._sWidthUnits });
-			this._oParent.getDomRef().appendChild(this._oDomRef);
+		createStandaloneHTMLRepresentation: function ({
+			bAssignToDomRef = true,
+			sId = this._sId,
+			aClasses = [],
+			aAttributes = [
+				["id", sId],
+				["style", `width:${this._iWidth}${this._sWidthUnits};max-width:${this._iWidth}${this._sWidthUnits}`],
+			],
+		}) {
+			const $element = this.renderer.createHTMLElement({
+				aClasses,
+				aAttributes,
+			});
+			if (bAssignToDomRef) this._oDomRef = $element;
+			return $element;
 		},
 
-		renderer: InputRenderer,
+		renderer: Renderer,
 	});
 });

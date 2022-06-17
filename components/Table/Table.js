@@ -1,6 +1,6 @@
 /* global sap*/
 sap.ui.define(
-	["sap/ui/core/Control", "./TableRenderer", "./TableHeaderRow", "./TableDataRow", "./TableRowTh", "./Column", "./TableCell", "./TableCellTh", "./ScrollBar"],
+	["sap/ui/core/Control", "./TableRenderer", "./Row/TableHeaderRow", "./Row/TableDataRow", "./Row/TableRowTh", "./Column", "./TableCell", "./TableCellTh", "./ScrollBar"],
 	function (Control, TableRenderer, TableHeaderRow, TableDataRow, TableRowTh, Column, TableCell, TableCellTh, ScrollBar) {
 		return Control.extend("Table", {
 			init: function () {
@@ -271,19 +271,20 @@ sap.ui.define(
 
 				for (let i = 0; i < iHeadersAmount; i++) {
 					const sRowId = this.oIdRowGenerator.next().value;
-					const $Tr = TableRenderer.createElement("tr", [], [["id", sRowId]]);
+
+					// const $Tr = TableRenderer.createElement("tr", [], [["id", sRowId]]);
 
 					const oRow = new TableHeaderRow({
 						sId: sRowId,
 						iRow: i,
 					});
 
-					this.mRowsById.set(sRowId, oRow);
+					// this.mRowsById.set(sRowId, oRow);
 
-					this.aRows.push(oRow);
-					this.aHeaderRow.push(oRow);
+					// this.aRows.push(oRow);
+					// this.aHeaderRow.push(oRow);
 
-					oRow.setDomRef($Tr);
+					// oRow.setDomRef($Tr);
 
 					let iColSpan = 0;
 					aColumns.forEach((oColumn, iColumn) => {
@@ -321,17 +322,17 @@ sap.ui.define(
 							iColSpan--;
 						}
 
-						const $Td = TableRenderer.createElement("td", [], aAttributes);
+						// const $Td = TableRenderer.createElement("td", [], aAttributes);
 						this.mCellsById.set(sCellId, oCell);
 
 						// oCell.setDisplayedValue(oHeader?.text || "", true);
 
-						$Td.innerHTML = oHeader?.text || "";
-						$Tr.appendChild($Td);
+						// $Td.innerHTML = oHeader?.text || "";
+						// $Tr.appendChild($Td);
 						oColumn.addHeaderCell(oCell);
-						oCell.setDomRef($Td);
-						oCell.setRowDomRef($Tr);
-						oCell.renderAggregation();
+						// oCell.setDomRef($Td);
+						// oCell.setRowDomRef($Tr);
+						// oCell.renderAggregation();
 					});
 
 					aTrs.push($Tr);

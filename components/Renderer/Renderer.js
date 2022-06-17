@@ -17,5 +17,12 @@ sap.ui.define(["sap/ui/base/Object"], function (UI5Object) {
 
 			return element;
 		},
+
+		addChild: function ($target, $child) {
+			if (!$target || !$child) {
+				return undefined;
+			}
+			return $target.appendChild($child);
+		},
 	});
 });
