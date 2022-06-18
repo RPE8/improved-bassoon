@@ -8,6 +8,7 @@ sap.ui.define(["sap/ui/core/Control", "./InputRenderer"], function (Control, Ren
 				displayedValue: "",
 				underhoodValue: "",
 			};
+			this.renderer = Renderer;
 			this._oDomRef = element;
 			this._oParent = oParent;
 			this._iWidth = iWidth;

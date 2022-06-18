@@ -2,9 +2,9 @@
 // eslint-disable-next-line no-undef
 sap.ui.define(["sap/ui/base/Object", "./TableCellRenderer"], function (UI5Object, Renderer) {
 	return UI5Object.extend("TableCell", {
-		constructor: function ({ rowElement, vValue, sId, iWidth, sWidthUnit, iColumn, iRow, tBodyRef, oRow, oColumn, fnAggregationConstructor }) {
+		constructor: function ({ rowElement, vValue, sId, iWidth, sWidthUnit, iColumn, iRow, tBodyRef, oRow, oColumn, fnAggregationConstructor, aPredefinedAttributes = [] }) {
 			this._sId = sId;
-			this._vValue = vValue;
+			this._aPredefinedAttributes = aPredefinedAttributes;
 			this._oDomRef = undefined;
 			this._iRow = iRow;
 			this._oRow = oRow;
@@ -16,6 +16,16 @@ sap.ui.define(["sap/ui/base/Object", "./TableCellRenderer"], function (UI5Object
 			this._tBodyRef = tBodyRef;
 			this._fnAggregationConstructor = fnAggregationConstructor;
 			this._oAggregation = undefined;
+
+			this._initPredefinedAttributes();
+		},
+
+		_initPredefinedAttributes: function () {
+			this._aPredefinedAttributes = [
+				...this._aPredefinedAttributes,
+				["id", this._sId],
+				["style", `width:${this._iWidth}${this._sWidthUnits};max-width:${this._iWidth}${this._sWidthUnits}`],
+			];
 		},
 
 		getDisplayedValue: function () {
@@ -132,7 +142,21 @@ sap.ui.define(["sap/ui/base/Object", "./TableCellRenderer"], function (UI5Object
 			return this;
 		},
 
-		initAggregation: function (fnAggregationConstructor, bForce) {
+		setPredefinedAttributes: function (aAttributes) {
+			this._aPredefinedAttributes = aAttributes;
+			return this;
+		},
+
+		getPredefinedAttributes: function () {
+			return this._aPredefinedAttributes;
+		},
+
+		addPredefinedAttribute: function (aAttribute) {
+			this._aPredefinedAttributes.push(aAttribute);
+			return this;
+		},
+
+		initAggregation: function (fnAggregationConstructor = this._fnAggregationConstructor, bForce) {
 			if (!fnAggregationConstructor) {
 				return;
 			}
@@ -146,15 +170,11 @@ sap.ui.define(["sap/ui/base/Object", "./TableCellRenderer"], function (UI5Object
 			return oAggregation;
 		},
 
-		createStandaloneHTMLRepresentation: function ({
-			bAssignToDomRef = true,
-			sId = this._sId,
-			aClasses = [],
-			aAttributes = [
-				["id", sId],
-				["style", `width:${this._iWidth}${this._sWidthUnits};max-width:${this._iWidth}${this._sWidthUnits}`],
-			],
-		}) {
+		createStandaloneHTMLRepresentation: function ({ bAssignToDomRef = true, sId = this._sId, aClasses = [], aAttributes = [] }) {
+			if (!aAttributes.length) {
+				aAttributes = [...this._aPredefinedAttributes];
+			}
+
 			const $element = this.renderer.createHTMLElement({
 				aClasses,
 				aAttributes,
@@ -163,23 +183,22 @@ sap.ui.define(["sap/ui/base/Object", "./TableCellRenderer"], function (UI5Object
 			return $element;
 		},
 
-		createFullfiledHTMLRepresentation: function ({
-			bAssignToDomRef = true,
-			bAssignToAggregation = true,
-			sId = this._sId,
-			aClasses = [],
-			aAttributes = [
-				["id", sId],
-				["style", `width:${this._iWidth}${this._sWidthUnits};max-width:${this._iWidth}${this._sWidthUnits}`],
-			],
-		}) {
+		createFullfiledHTMLRepresentation: function ({ bAssignToDomRef = true, bAssignToAggregation = true, sId = this._sId, aClasses = [], aAttributes = [] }) {
+			if (aAttributes.length) {
+				aAttributes = [...this._aPredefinedAttributes, ...aAttributes];
+			} else {
+				aAttributes = [...this._aPredefinedAttributes];
+			}
+
 			const $element = this.createStandaloneHTMLRepresentation({ sId, aClasses, aAttributes, bAssignToDomRef: false });
 			if (bAssignToDomRef) this._oDomRef = $element;
 
 			const oAggregation = this.initAggregation();
-			if (bAssignToAggregation) this.this._oAggregation = oAggregation;
-
-			this.renderer.addChild(oAggregation?.createStandaloneHTMLRepresentation());
+			if (bAssignToAggregation) this._oAggregation = oAggregation;
+			const $aggregation = oAggregation?.createStandaloneHTMLRepresentation({});
+			if ($aggregation) {
+				this.renderer.addChild($element, $aggregation);
+			}
 
 			return $element;
 		},

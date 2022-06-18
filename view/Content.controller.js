@@ -58,7 +58,7 @@ sap.ui.define(
 					//   }]
 					// });
 
-					this.byId("test").createColumns();
+					this.byId("test").renderTable();
 				});
 			},
 		});

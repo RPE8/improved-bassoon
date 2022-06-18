@@ -2,8 +2,8 @@
 // eslint-disable-next-line no-undef
 sap.ui.define(["sap/ui/base/Object", "./TableRowRenderer"], function (Object, Renderer) {
 	return Object.extend("TableRow", {
-		constructor: function ({ iColumn, iRow, sId, aCells = [], tBody }) {
-			this._iRow = iRow;
+		constructor: function ({ iColumn, iIndex, sId, aCells = [], tBody }) {
+			this._iIndex = iIndex;
 			this._iColumn = iColumn;
 			this._sId = sId;
 			this._aCells = aCells;
@@ -18,6 +18,15 @@ sap.ui.define(["sap/ui/base/Object", "./TableRowRenderer"], function (Object, Re
 
 		getId: function () {
 			return this._sId;
+		},
+
+		setIndex: function (iValue) {
+			this._iIndex = iValue;
+			return this;
+		},
+
+		getIndex: function () {
+			return this._iIndex;
 		},
 
 		setCells: function (aValue) {
@@ -68,8 +77,11 @@ sap.ui.define(["sap/ui/base/Object", "./TableRowRenderer"], function (Object, Re
 			const aCells = this._aCells;
 
 			aCells.forEach((oCell) => {
-				const $element = oCell.createFullfiledHTMLRepresentation();
-				this.renderer.addChild($element);
+				const $cell = oCell.createFullfiledHTMLRepresentation({});
+				if (!$cell) {
+					return;
+				}
+				this.renderer.addChild($element, $cell);
 			});
 
 			return $element;

@@ -2,12 +2,17 @@
 // eslint-disable-next-line no-undef
 sap.ui.define(["sap/ui/base/Object"], function (Object) {
 	return Object.extend("Column", {
-		constructor: function ({ sId, aClasses = [], iColumn, aHeaders, fnDataAccessor, iWidth, sWidthUnit, fnAggregationConstructor }) {
+		constructor: function ({ sId, aClasses = [], iIndex, iColumn, aHeaders, fnDataAccessor, iWidth, sWidthUnit, fnAggregationConstructor }) {
 			this._sId = sId;
+			this._iIndex = iIndex;
 			this._aClasses = aClasses;
 			this._aHeadersObjects = aHeaders;
 			this._aHeaderCells = [];
 			this._aDataCells = [];
+			this._oUtilCells = {
+				headerTh: [],
+				dataTh: [],
+			};
 			this._fnDataAccessor = fnDataAccessor;
 			this._iColumn = iColumn;
 			this._iWidth = iWidth;
@@ -39,13 +44,13 @@ sap.ui.define(["sap/ui/base/Object"], function (Object) {
 			return this;
 		},
 
-		setColumnIndex: function (iValue) {
-			this._iColumn = iValue;
+		setIndex: function (iValue) {
+			this._iIndex = iValue;
 			return this;
 		},
 
-		getColumnIndex: function () {
-			return this._iColumn;
+		getIndex: function () {
+			return this._iIndex;
 		},
 
 		setDataCells: function (aValue) {
@@ -64,6 +69,28 @@ sap.ui.define(["sap/ui/base/Object"], function (Object) {
 
 		getHeadersObjects: function () {
 			return this._aHeadersObjects;
+		},
+
+		getUtilCells: function () {
+			return this._oUtilCells;
+		},
+
+		setUtilCells: function (sName, aData) {
+			this._oUtilCells[sName] = aData;
+		},
+
+		addUtilCells: function (sName, aData) {
+			if (!this._oUtilCells[sName]) {
+				this._oUtilCells[sName] = [];
+			}
+
+			this._oUtilCells[sName] = [...this._oUtilCells[sName], ...aData];
+			return this;
+		},
+
+		removeUtilCells: function (sName) {
+			delete this._oUtilCells[sName];
+			return this;
 		},
 
 		setDataAccessor: function (fnAccessor) {
