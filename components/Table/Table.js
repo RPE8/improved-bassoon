@@ -364,7 +364,7 @@ sap.ui.define(
 					oThRow.addCell2BeCreated(oCell);
 					iColSpan = oHeader?.span ?? 0;
 					if (oHeader?.span) {
-						oCell.addPredefinedAttribute(["colspan", oHeader.span]);
+						// oCell.addPredefinedAttribute(["colspan", oHeader.span]);
 						iColSpan--;
 					}
 
@@ -406,7 +406,7 @@ sap.ui.define(
 						oRow.addCell2BeCreated(oCell);
 						iColSpan = oHeader?.span ?? 0;
 						if (oHeader?.span) {
-							oCell.addPredefinedAttribute(["colspan", oHeader.span]);
+							// oCell.addPredefinedAttribute(["colspan", oHeader.span]);
 							iColSpan--;
 						}
 

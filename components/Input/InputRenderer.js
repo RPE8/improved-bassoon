@@ -5,7 +5,7 @@ sap.ui.define(["../Renderer/Renderer"], function (Renderer) {
 	const oRenderer = new Renderer();
 
 	oRenderer.createHTMLElement = function ({ aClasses = [], aAttributes = [] }) {
-		return this.createElement("input", ["Input", ...aClasses], [...aAttributes]);
+		return this.createElement("input", [...aClasses], [...aAttributes]);
 	};
 
 	return oRenderer;

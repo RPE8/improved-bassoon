@@ -1,18 +1,36 @@
 // TODO: To prorotype
 // eslint-disable-next-line no-undef
-sap.ui.define(["sap/ui/core/Control", "./InputRenderer"], function (Control, Renderer) {
-	return Control.extend("Input", {
-		constructor: function ({ sId, element, oParent, iWidth, sWidthUnits }) {
-			this._sId = sId;
+sap.ui.define(["../BaseDOMComponent/BaseDOMComponent", "./InputRenderer"], function (Component, Renderer) {
+	return Component.extend("Input", {
+		constructor: function ({ sId, element, oParent, iWidth, sWidthUnits, iHeight, iHeightUnits, oPredefinedAttributes, aPredefinedClasses }) {
+			const aInitialClasses = ["Input"];
+			const oIntialAttributes = {
+				id: sId,
+				style: {
+					width: `${this._iWidth}${this._sWidthUnits}`,
+					"max-width": `${this._iWidth}${this._sWidthUnits}`,
+				},
+			};
+			Component.call(this, {
+				sId,
+				element,
+				oParent,
+				iWidth,
+				sWidthUnits,
+				iHeight,
+				iHeightUnits,
+				oPredefinedAttributes,
+				aPredefinedClasses,
+				oRenderer: Renderer,
+				oIntialAttributes,
+				aInitialClasses,
+				oRederer: Renderer,
+			});
+
 			this._oValues = {
 				displayedValue: "",
 				underhoodValue: "",
 			};
-			this.renderer = Renderer;
-			this._oDomRef = element;
-			this._oParent = oParent;
-			this._iWidth = iWidth;
-			this._sWidthUnits = sWidthUnits;
 		},
 
 		getValues: function () {
@@ -35,24 +53,5 @@ sap.ui.define(["sap/ui/core/Control", "./InputRenderer"], function (Control, Ren
 		getValueByType: function (sType) {
 			return this._oValues[sType];
 		},
-
-		createStandaloneHTMLRepresentation: function ({
-			bAssignToDomRef = true,
-			sId = this._sId,
-			aClasses = [],
-			aAttributes = [
-				["id", sId],
-				["style", `width:${this._iWidth}${this._sWidthUnits};max-width:${40}${this._sWidthUnits}`],
-			],
-		}) {
-			const $element = this.renderer.createHTMLElement({
-				aClasses,
-				aAttributes,
-			});
-			if (bAssignToDomRef) this._oDomRef = $element;
-			return $element;
-		},
-
-		renderer: Renderer,
 	});
 });
