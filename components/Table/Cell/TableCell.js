@@ -2,7 +2,7 @@
 // eslint-disable-next-line no-undef
 sap.ui.define(["sap/ui/base/Object", "./TableCellRenderer"], function (UI5Object, Renderer) {
 	return UI5Object.extend("TableCell", {
-		constructor: function ({ rowElement, vValue, sId, iWidth, sWidthUnit, iColumn, iRow, tBodyRef, oRow, oColumn, fnAggregationConstructor, aPredefinedAttributes = [] }) {
+		constructor: function ({ rowElement, vValue, sId, iWidth, sWidthUnits, iColumn, iRow, tBodyRef, oRow, oColumn, fnAggregationConstructor, aPredefinedAttributes = [] }) {
 			this._sId = sId;
 			this._aPredefinedAttributes = aPredefinedAttributes;
 			this._oDomRef = undefined;
@@ -10,7 +10,7 @@ sap.ui.define(["sap/ui/base/Object", "./TableCellRenderer"], function (UI5Object
 			this._oRow = oRow;
 			this._oRowDomRef = rowElement;
 			this._iWidth = iWidth;
-			this._sWidthUnit = sWidthUnit;
+			this._sWidthUnits = sWidthUnits;
 			this._iColumn = iColumn;
 			this._oColumn = oColumn;
 			this._tBodyRef = tBodyRef;
@@ -89,11 +89,11 @@ sap.ui.define(["sap/ui/base/Object", "./TableCellRenderer"], function (UI5Object
 		},
 
 		getWidthUnit: function () {
-			return this._sWidthUnit;
+			return this._sWidthUnits;
 		},
 
 		setWidthUnit: function (sValue) {
-			this._sWidthUnit = sValue;
+			this._sWidthUnits = sValue;
 			return this;
 		},
 
@@ -165,7 +165,7 @@ sap.ui.define(["sap/ui/base/Object", "./TableCellRenderer"], function (UI5Object
 				return this._oAggregation;
 			}
 
-			const oAggregation = (this._oAggregation = new fnAggregationConstructor({ oParent: this, iWidth: this._iWidth, sWidthUnits: this._sWidthUnit }));
+			const oAggregation = (this._oAggregation = new fnAggregationConstructor({ oParent: this, iWidth: this._iWidth, sWidthUnits: this._sWidthUnits }));
 
 			return oAggregation;
 		},

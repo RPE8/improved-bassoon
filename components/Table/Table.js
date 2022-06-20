@@ -265,7 +265,7 @@ sap.ui.define(
 					sDataPath: oColumn.sDataPath,
 					fnDataAccessor: oColumn.fnDataAccessor,
 					iWidth: oColumn.iWidth,
-					sWidthUnit: oColumn.sWidthUnit,
+					sWidthUnits: oColumn.sWidthUnits,
 					fnAggregationConstructor: oColumn.oAggregationConstructor,
 				});
 
@@ -290,7 +290,7 @@ sap.ui.define(
 					root: this.$TableBodyScrollContainer,
 				});
 
-				const aHeaderRows = this.createFulFilledHeadersPartElements();
+				const aHeaderRows = this.createFulfilledHeadersPartElements();
 				console.log(aHeaderRows);
 				// return;
 				let iBodyWidth = 0;
@@ -324,7 +324,7 @@ sap.ui.define(
 				console.log(this.mCellsById);
 			},
 
-			createFulFilledHeadersPartElements: function () {
+			createFulfilledHeadersPartElements: function () {
 				let aElements = [];
 				const aColumns = this.aColumns;
 				const iHeadersAmount = this.iColumnHeaderRows;
@@ -338,6 +338,7 @@ sap.ui.define(
 					iIndex: oRowIndexGenerator.next().value,
 				});
 
+				let iColSpan = 0;
 				for (let iColumn = 0; iColumn < iColumnsLength; iColumn++) {
 					const oColumn = aColumns[iColumn];
 					const oCell = new TableCell({
@@ -349,18 +350,18 @@ sap.ui.define(
 						oThRow,
 						iWidth: oColumn.getWidth(),
 						fnAggregationConstructor: undefined,
-						sWidthUnit: oColumn.getWidthUnit(),
+						sWidthUnits: oColumn.getWidthUnit(),
 					});
 
 					oThRow.addCell(oCell);
 
 					const aHeaders = oColumn.getHeadersObjects();
 					const oHeader = aHeaders[iColumn];
-					let iColSpan = 0;
 					if (iColSpan > 0) {
 						iColSpan--;
-						return;
+						continue;
 					}
+					oThRow.addCell2BeCreated(oCell);
 					iColSpan = oHeader?.span ?? 0;
 					if (oHeader?.span) {
 						oCell.addPredefinedAttribute(["colspan", oHeader.span]);
@@ -380,7 +381,7 @@ sap.ui.define(
 
 					this.oRows.allRows.push(oRow);
 					this.oRows.headersRows.push(oRow);
-
+					let iColSpan = 0;
 					for (let iColumn = 0; iColumn < iColumnsLength; iColumn++) {
 						const oColumn = aColumns[iColumn];
 						const oCell = new TableCell({
@@ -392,18 +393,17 @@ sap.ui.define(
 							oRow,
 							iWidth: oColumn.getWidth(),
 							fnAggregationConstructor: oColumn.getAggregationConstructor(),
-							sWidthUnit: oColumn.getWidthUnit(),
+							sWidthUnits: oColumn.getWidthUnit(),
 						});
-
 						oRow.addCell(oCell);
-
 						const aHeaders = oColumn.getHeadersObjects();
 						const oHeader = aHeaders[iColumn];
-						let iColSpan = 0;
+
 						if (iColSpan > 0) {
 							iColSpan--;
-							return;
+							continue;
 						}
+						oRow.addCell2BeCreated(oCell);
 						iColSpan = oHeader?.span ?? 0;
 						if (oHeader?.span) {
 							oCell.addPredefinedAttribute(["colspan", oHeader.span]);
@@ -457,7 +457,7 @@ sap.ui.define(
 						iRow: undefined,
 						oRowTh,
 						iWidth: oColumn.getWidth(),
-						sWidthUnit: oColumn.getWidthUnit(),
+						sWidthUnits: oColumn.getWidthUnit(),
 					});
 					oRowTh.addCell(oCell);
 
@@ -514,7 +514,7 @@ sap.ui.define(
 							oRow,
 							iWidth: oColumn.getWidth(),
 							fnAggregationConstructor: oColumn.getAggregationConstructor(),
-							sWidthUnit: oColumn.getWidthUnit(),
+							sWidthUnits: oColumn.getWidthUnit(),
 						});
 						oRow.addCell(oCell);
 

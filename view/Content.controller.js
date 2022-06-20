@@ -41,7 +41,7 @@ sap.ui.define(
 						this.byId("test").addColumn2BeCreated({
 							aHeaders: aCells,
 							iWidth: 80,
-							sWidthUnit: "px",
+							sWidthUnits: "px",
 							oAggregationConstructor: Input,
 							fnDataAccessor: function (oData) {
 								return oData["data"][i];

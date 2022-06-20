@@ -2,7 +2,7 @@
 // eslint-disable-next-line no-undef
 sap.ui.define(["sap/ui/base/Object"], function (Object) {
 	return Object.extend("Column", {
-		constructor: function ({ sId, aClasses = [], iIndex, iColumn, aHeaders, fnDataAccessor, iWidth, sWidthUnit, fnAggregationConstructor }) {
+		constructor: function ({ sId, aClasses = [], iIndex, iColumn, aHeaders, fnDataAccessor, iWidth, sWidthUnits, fnAggregationConstructor }) {
 			this._sId = sId;
 			this._iIndex = iIndex;
 			this._aClasses = aClasses;
@@ -16,7 +16,7 @@ sap.ui.define(["sap/ui/base/Object"], function (Object) {
 			this._fnDataAccessor = fnDataAccessor;
 			this._iColumn = iColumn;
 			this._iWidth = iWidth;
-			this._sWidthUnit = sWidthUnit;
+			this._sWidthUnits = sWidthUnits;
 			this._iRenderedWidth = null;
 			this._fnAggregationConstructor = fnAggregationConstructor;
 		},
@@ -112,12 +112,12 @@ sap.ui.define(["sap/ui/base/Object"], function (Object) {
 		},
 
 		setWidthUnit: function (sValue) {
-			this._sWidthUnit = sValue;
+			this._sWidthUnits = sValue;
 			return this;
 		},
 
 		getWidthUnit: function () {
-			return this._sWidthUnit;
+			return this._sWidthUnits;
 		},
 
 		setRenderedWidth: function (iValue) {

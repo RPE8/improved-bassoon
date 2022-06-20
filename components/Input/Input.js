@@ -42,7 +42,7 @@ sap.ui.define(["sap/ui/core/Control", "./InputRenderer"], function (Control, Ren
 			aClasses = [],
 			aAttributes = [
 				["id", sId],
-				["style", `width:${this._iWidth}${this._sWidthUnits};max-width:${this._iWidth}${this._sWidthUnits}`],
+				["style", `width:${this._iWidth}${this._sWidthUnits};max-width:${40}${this._sWidthUnits}`],
 			],
 		}) {
 			const $element = this.renderer.createHTMLElement({
