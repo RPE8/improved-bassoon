@@ -1,6 +1,6 @@
 // TODO: To prorotype
 // eslint-disable-next-line no-undef
-sap.ui.define(["../../BaseDOMComponent/BaseDOMComponent", "./TableCellRenderer"], function (Component, Renderer) {
+sap.ui.define(["../../BaseDOMComponent/BaseDOMComponent", "../../BaseDOMUtils/BaseDOMUtils", "./TableCellRenderer"], function (Component, DOMUtils, Renderer) {
 	return Component.extend("TableCell", {
 		constructor: function ({
 			sId,
@@ -12,17 +12,7 @@ sap.ui.define(["../../BaseDOMComponent/BaseDOMComponent", "./TableCellRenderer"]
 			iWidth,
 			sWidthUnits,
 			iHeight,
-			iHeightUnits,
-			oInitialAttributes = sId
-				? {
-						id: sId,
-						// style: {
-						// 	width: `${iWidth}${sWidthUnits}`,
-						// 	"max-width": `${iWidth}${sWidthUnits}`,
-						// },
-				  }
-				: {},
-			aInitialClasses = ["Cell"],
+			sHeightUnits,
 			oPredefinedAttributes = {},
 			aPredefinedClasses = [],
 			oRenderer = Renderer,
@@ -35,6 +25,7 @@ sap.ui.define(["../../BaseDOMComponent/BaseDOMComponent", "./TableCellRenderer"]
 			// 	// 	"max-width": `${iWidth}${sWidthUnits}`,
 			// 	// },
 			// };
+			aPredefinedClasses = DOMUtils.mergeClasses(aPredefinedClasses, ["Cell"]);
 			Component.call(this, {
 				sId,
 				element,
@@ -42,12 +33,10 @@ sap.ui.define(["../../BaseDOMComponent/BaseDOMComponent", "./TableCellRenderer"]
 				iWidth,
 				sWidthUnits,
 				iHeight,
-				iHeightUnits,
+				sHeightUnits,
 				oPredefinedAttributes,
 				aPredefinedClasses,
 				oRenderer: oRenderer,
-				oInitialAttributes,
-				aInitialClasses,
 			});
 			this._oRow = oRow;
 			this._oColumn = oColumn;
@@ -125,6 +114,8 @@ sap.ui.define(["../../BaseDOMComponent/BaseDOMComponent", "./TableCellRenderer"]
 			aClasses = [],
 			sClassesAction = "MERGE",
 			oAttributes = {},
+			oAggregationAttributes = {},
+			sAggregationAttributesAction = "MERGE",
 			sAttributesAction = "MERGE",
 			bAssignToAggregation = true,
 		}) {
@@ -139,9 +130,16 @@ sap.ui.define(["../../BaseDOMComponent/BaseDOMComponent", "./TableCellRenderer"]
 
 			const oAggregation = this.initAggregation();
 			if (bAssignToAggregation) this._oAggregation = oAggregation;
-			const $aggregation = oAggregation?.createStandaloneHTMLRepresentation({});
+			const $aggregation = oAggregation?.createStandaloneHTMLRepresentation({ oAttributes: oAggregationAttributes, sAttributesAction: sAggregationAttributesAction });
 			if ($aggregation) {
-				this.renderer.addChild($element, $aggregation);
+				const aAttributes = [];
+				if (this.getHeight() !== undefined) {
+					let sHeight = `${this.getHeight()}${this.getHeightUnits() ?? ""}`;
+					aAttributes.push(["style", `height:${sHeight}`]);
+				}
+				const $wrapper = this.renderer.createElement("div", ["Wrapper", "InputWrapper"], aAttributes);
+				this.renderer.addChild($wrapper, $aggregation);
+				this.renderer.addChild($element, $wrapper);
 			}
 
 			return $element;

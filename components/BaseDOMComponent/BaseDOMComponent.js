@@ -1,22 +1,9 @@
 /* eslint-disable indent */
 // TODO: To prorotype
 // eslint-disable-next-line no-undef
-sap.ui.define(["sap/ui/base/Object"], function (UI5Object) {
+sap.ui.define(["sap/ui/base/Object", "../BaseDOMUtils/BaseDOMUtils"], function (UI5Object) {
 	return UI5Object.extend("BaseDomComponent", {
-		constructor: function ({
-			oPredefinedAttributes = {},
-			oInitialAttributes = {},
-			aInitialClasses = [],
-			sId,
-			aPredefinedClasses = [],
-			element,
-			oParent,
-			iWidth,
-			sWidthUnits,
-			oRenderer,
-			iHeight,
-			sHeightUnits,
-		}) {
+		constructor: function ({ oPredefinedAttributes = {}, sId, aPredefinedClasses = [], element, oParent, iWidth, sWidthUnits, oRenderer, iHeight, sHeightUnits }) {
 			this._oDomRef = element;
 			this._oParent = oParent;
 			this._iWidth = iWidth;
@@ -24,14 +11,20 @@ sap.ui.define(["sap/ui/base/Object"], function (UI5Object) {
 			this._sId = sId;
 			this._iHeight = iHeight;
 			this._sHeightUnits = sHeightUnits;
-			this._oInitialAttributes = oInitialAttributes;
-			this._oPredefinedAttributes = this.mergeAttributes(oPredefinedAttributes, this._oInitialAttributes);
-			this._aInitialClasses = aInitialClasses;
-			this._aPredefinedClasses = this.mergeClasses(aPredefinedClasses, this._aInitialClasses);
+			if (sId) {
+				oPredefinedAttributes = this.mergeAttributes(
+					{
+						id: sId,
+					},
+					oPredefinedAttributes
+				);
+			}
+			this._oPredefinedAttributes = oPredefinedAttributes;
+			this._aPredefinedClasses = aPredefinedClasses;
 			this.renderer = oRenderer;
 		},
 
-		overrideAttribtes: function (oAttributesTarget, oAttributesSource) {
+		overrideAttributes: function (oAttributesTarget, oAttributesSource) {
 			return {
 				...oAttributesTarget,
 				...oAttributesSource,
@@ -61,6 +54,10 @@ sap.ui.define(["sap/ui/base/Object"], function (UI5Object) {
 
 				return oPrev;
 			}, {});
+		},
+
+		isEmptyObject: function (oObj) {
+			return oObj && Object.keys && Object.keys(oObj).length === 0 && Object.getPrototypeOf(oObj) === Object.prototype;
 		},
 
 		mergeClasses: function (aClassesTarget, aClassesSource) {
@@ -177,7 +174,7 @@ sap.ui.define(["sap/ui/base/Object"], function (UI5Object) {
 					break;
 				}
 				case "OVERRRIDE": {
-					oFinalttributes = this.overrideAttribtes(this._oPredefinedAttributes, oAttributes);
+					oFinalttributes = this.overrideAttributes(this._oPredefinedAttributes, oAttributes);
 					break;
 				}
 				case "REPLACE": {

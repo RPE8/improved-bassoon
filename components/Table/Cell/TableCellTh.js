@@ -1,20 +1,10 @@
 // TODO: To prorotype
 // eslint-disable-next-line no-undef
-sap.ui.define(["./TableCell", "./TableCellThRenderer"], function (TableCell, oRenderer) {
+sap.ui.define(["./TableCell", "../../BaseDOMUtils/BaseDOMUtils", "./TableCellThRenderer"], function (TableCell, DOMUtils, oRenderer) {
 	return TableCell.extend("TableTHCell", {
 		constructor: function (oParameters) {
-			const aInitialClasses = ["Cell"];
-			const oInitialAttributes = {
-				// id: oParameters.sId,
-				style: {
-					width: `${oParameters.iWidth}${oParameters.sWidthUnits}`,
-					"max-width": `${oParameters.iWidth}${oParameters.sWidthUnits}`,
-				},
-			};
-
-			oParameters.aInitialClasses = aInitialClasses;
-			oParameters.oInitialAttributes = oInitialAttributes;
 			oParameters.oRenderer = oRenderer;
+			oParameters.aPredefinedClasses = DOMUtils.mergeClasses(oParameters.aPredefinedClasses || [], ["CellTh"]);
 			TableCell.call(this, oParameters);
 			this.bTableTHCell = true;
 		},

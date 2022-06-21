@@ -1,18 +1,10 @@
 // TODO: To prorotype
 // eslint-disable-next-line no-undef
-sap.ui.define(["../BaseDOMComponent/BaseDOMComponent", "./InputRenderer"], function (Component, Renderer) {
+sap.ui.define(["../BaseDOMComponent/BaseDOMComponent", "../BaseDOMUtils/BaseDOMUtils", "./InputRenderer"], function (Component, DOMUtils, Renderer) {
 	return Component.extend("Input", {
-		constructor: function ({ sId, element, oParent, iWidth, sWidthUnits, iHeight, iHeightUnits, oPredefinedAttributes, aPredefinedClasses }) {
-			const aInitialClasses = ["Input"];
-			const oInitialAttributes = {
-				style: {
-					width: `${iWidth}${sWidthUnits}`,
-					"max-width": `${iWidth}${sWidthUnits}`,
-				},
-			};
-			if (sId) {
-				oInitialAttributes.id = sId;
-			}
+		constructor: function ({ sId, element, oParent, iWidth, sWidthUnits, iHeight, iHeightUnits, oPredefinedAttributes = {}, aPredefinedClasses = [] }) {
+			aPredefinedClasses = DOMUtils.mergeClasses(aPredefinedClasses, ["Input", "BasicInput"]);
+
 			Component.call(this, {
 				sId,
 				element,
@@ -24,8 +16,6 @@ sap.ui.define(["../BaseDOMComponent/BaseDOMComponent", "./InputRenderer"], funct
 				oPredefinedAttributes,
 				aPredefinedClasses,
 				oRenderer: Renderer,
-				oInitialAttributes,
-				aInitialClasses,
 				oRederer: Renderer,
 			});
 

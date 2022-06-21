@@ -3,20 +3,20 @@ sap.ui.define(
 	[
 		"sap/ui/core/Control",
 		"./TableRenderer",
-		"./Row/TableHeaderRow",
-		"./Row/TableDataRow",
+		"./Row/TableRowHeader",
+		"./Row/TableRowData",
 		"./Row/TableRowTh",
 		"./Column/Column",
 		"./Cell/TableCell",
 		"./Cell/TableCellTh",
 		"./ScrollBar",
 	],
-	function (Control, TableRenderer, TableHeaderRow, TableDataRow, TableRowTh, Column, TableCell, TableCellTh, ScrollBar) {
+	function (Control, TableRenderer, TableRowHeader, TableRowData, TableRowTh, Column, TableCell, TableCellTh, ScrollBar) {
 		return Control.extend("Table", {
 			init: function () {
 				this.aColumns = [];
 				this.iRows = 70;
-				this.iRowHeight = 22;
+				this.iRowHeight = 17;
 				this.iColumns = 70;
 				this.iColumnHeaderRows = 3;
 				// this.oDataMap = new Map();
@@ -336,6 +336,7 @@ sap.ui.define(
 				const oThRow = new TableRowTh({
 					sId: oRowIdGenerator.next().value,
 					iIndex: oRowIndexGenerator.next().value,
+					iHeight: this.iRowHeight,
 				});
 
 				// let iColSpan = 0;
@@ -374,9 +375,10 @@ sap.ui.define(
 				aElements.push(oThRow.createFullfiledHTMLRepresentation({}));
 				// return aElements;
 				for (let iRow = 0; iRow < iHeadersAmount; iRow++) {
-					const oRow = new TableHeaderRow({
+					const oRow = new TableRowHeader({
 						sId: oRowIdGenerator.next().value,
 						iIndex: oRowIndexGenerator.next().value,
+						iHeight: this.iRowHeight,
 					});
 
 					this.oRows.allRows.push(oRow);
@@ -391,6 +393,8 @@ sap.ui.define(
 							oColumn,
 							iRow: oRow.getIndex(),
 							oRow,
+							iHeight: oRow.getHeight(),
+							sHeightUnits: oRow.getHeightUnits(),
 							iWidth: oColumn.getWidth(),
 							fnAggregationConstructor: oColumn.getAggregationConstructor(),
 							sWidthUnits: oColumn.getWidthUnit(),
@@ -492,7 +496,7 @@ sap.ui.define(
 					const sRowId = this.oIdRowGenerator.next().value;
 					const $Tr = TableRenderer.createElement("tr", [], [["id", sRowId]]);
 
-					const oRow = new TableDataRow({
+					const oRow = new TableRowData({
 						sId: sRowId,
 						iRow: i,
 					});

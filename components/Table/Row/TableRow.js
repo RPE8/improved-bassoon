@@ -1,41 +1,28 @@
 // TODO: To prorotype
 // eslint-disable-next-line no-undef
-sap.ui.define(["../../BaseDOMComponent/BaseDOMComponent", "./TableRowRenderer"], function (Component, Renderer) {
+sap.ui.define(["../../BaseDOMComponent/BaseDOMComponent", "../../BaseDOMUtils/BaseDOMUtils", "./TableRowRenderer"], function (Component, DOMUtils, Renderer) {
 	return Component.extend("TableRow", {
-		constructor: function ({
-			sId,
-			iIndex,
-			aCells = [],
-			aCreatedCells = [],
-			element,
-			oParent,
-			iWidth,
-			sWidthUnits,
-			iHeight,
-			iHeightUnits,
-			oInitialAttributes = {
-				id: sId,
-				style: {},
-			},
-			aInitialClasses = ["Row"],
-			oPredefinedAttributes = {},
-			aPredefinedClasses = [],
-			oRenderer = Renderer,
-		}) {
-			Component.call(this, {
-				sId,
-				element,
-				oParent,
-				iWidth,
-				sWidthUnits,
-				iHeight,
-				iHeightUnits,
-				oPredefinedAttributes,
-				aPredefinedClasses,
-				oInitialAttributes,
-				aInitialClasses,
-				oRenderer: oRenderer,
-			});
+		constructor: function (oParameters) {
+			let { iIndex, aCells = [], aCreatedCells = [], iHeight = 17, sHeightUnits = "px", aPredefinedClasses = [], oPredefinedAttributes = {} } = oParameters;
+
+			oParameters.aPredefinedClasses = DOMUtils.mergeClasses(aPredefinedClasses, ["Row"]);
+			oParameters.oPredefinedAttributes = DOMUtils.mergeAttributes(
+				{
+					// style: {
+					// 	height: iHeight + sHeightUnits,
+					// 	"max-height": iHeight + sHeightUnits,
+					// },
+				},
+				oPredefinedAttributes
+			);
+			oParameters.iHeight = iHeight;
+			oParameters.sHeightUnits = sHeightUnits;
+			if (!oParameters.oRenderer) {
+				oParameters.oRenderer = Renderer;
+			}
+
+			Component.call(this, oParameters);
+
 			this._iIndex = iIndex;
 			this._aCells = aCells;
 			this._aCells2BeCreated = [];

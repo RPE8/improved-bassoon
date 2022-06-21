@@ -3,23 +3,18 @@
 	width: 100%;
 	box-sizing: border-box;
 	overflow-x: auto;
-}
-
-table {
 	border-collapse: collapse;
 	table-layout: fixed;
 }
 
-td {
+.InputWrapper {
 	box-sizing: border-box;
-	padding: 0px;
-	border-spacing: 0px;
+	width: 100%;
+	border: 2px red solid;
 }
 
-th {
-	box-sizing: border-box;
-	padding: 0px;
-	border-spacing: 0px;
+.Wrapper {
+	display: flex;
 }
 
 .tableBodyScrollWrapper {
@@ -52,16 +47,42 @@ th {
 	/* width: auto; */
 }
 
+#TABLE .BasicInput {
+	width: 100%;
+	height: 100%;
+}
+
 #TABLE tr {
-	height: 22px;
+	/* height: 22px; */
+	box-sizing: border-box;
 	/* max-width: 200px;
     min-width: 200px; */
 }
 
 #TABLE td {
-	border: 1px red solid;
+	box-sizing: border-box;
+	padding: 0px;
+	border-spacing: 0px;
 	/* max-width: 200px;
     min-width: 200px; */
+}
+
+#TABLE .RowTh {
+	height: 0px;
+	padding: 0px;
+	margin: 0px;
+	border-spacing: 0px;
+}
+
+#TABLE .Cell {
+	overflow: hidden;
+}
+
+#TABLE .RowTh > th {
+	height: 0px;
+	padding: 0px;
+	margin: 0px;
+	border-spacing: 0px;
 }
 
 .tableBodyWrapper {

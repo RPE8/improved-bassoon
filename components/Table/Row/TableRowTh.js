@@ -1,17 +1,18 @@
 // TODO: To prorotype
 // eslint-disable-next-line no-undef
-sap.ui.define(["./TableRow", "./TableRowThRenderer"], function (TableRow, Renderer) {
+sap.ui.define(["./TableRow", "../../BaseDOMUtils/BaseDOMUtils", "./TableRowThRenderer"], function (TableRow, DOMUtils, Renderer) {
 	return TableRow.extend("TableRowTH", {
 		constructor: function (oParameters) {
-			const aInitialClasses = ["Row"];
-			const oInitialAttributes = {
-				id: oParameters.sId,
-				style: {
-					height: "0px",
+			let { aPredefinedClasses = [], oPredefinedAttributes = {} } = oParameters;
+			oParameters.aPredefinedClasses = DOMUtils.mergeClasses(aPredefinedClasses, ["RowTh"]);
+			oParameters.oPredefinedAttributes = DOMUtils.mergeAttributes(
+				{
+					style: {
+						height: "0px",
+					},
 				},
-			};
-			oParameters.aInitialClasses = aInitialClasses;
-			oParameters.oInitialAttributes = oInitialAttributes;
+				oPredefinedAttributes
+			);
 			oParameters.oRenderer = Renderer;
 			TableRow.call(this, oParameters);
 			this.bTableRowTH = true;
