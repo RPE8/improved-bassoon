@@ -13,17 +13,28 @@ sap.ui.define(["../../BaseDOMComponent/BaseDOMComponent", "./TableCellRenderer"]
 			sWidthUnits,
 			iHeight,
 			iHeightUnits,
+			oInitialAttributes = sId
+				? {
+						id: sId,
+						// style: {
+						// 	width: `${iWidth}${sWidthUnits}`,
+						// 	"max-width": `${iWidth}${sWidthUnits}`,
+						// },
+				  }
+				: {},
+			aInitialClasses = ["Cell"],
 			oPredefinedAttributes = {},
 			aPredefinedClasses = [],
+			oRenderer = Renderer,
 		}) {
-			const aInitialClasses = ["Cell"];
-			const oIntialAttributes = {
-				id: sId,
-				style: {
-					width: `${this._iWidth}${this._sWidthUnits}`,
-					"max-width": `${this._iWidth}${this._sWidthUnits}`,
-				},
-			};
+			// const aInitialClasses = ["Cell"];
+			// const oInitialAttributes = {
+			// 	id: sId,
+			// 	// style: {
+			// 	// 	width: `${iWidth}${sWidthUnits}`,
+			// 	// 	"max-width": `${iWidth}${sWidthUnits}`,
+			// 	// },
+			// };
 			Component.call(this, {
 				sId,
 				element,
@@ -34,10 +45,9 @@ sap.ui.define(["../../BaseDOMComponent/BaseDOMComponent", "./TableCellRenderer"]
 				iHeightUnits,
 				oPredefinedAttributes,
 				aPredefinedClasses,
-				oRenderer: Renderer,
-				oIntialAttributes,
+				oRenderer: oRenderer,
+				oInitialAttributes,
 				aInitialClasses,
-				oRederer: Renderer,
 			});
 			this._oRow = oRow;
 			this._oColumn = oColumn;

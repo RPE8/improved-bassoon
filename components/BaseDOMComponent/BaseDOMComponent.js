@@ -24,9 +24,9 @@ sap.ui.define(["sap/ui/base/Object"], function (UI5Object) {
 			this._sId = sId;
 			this._iHeight = iHeight;
 			this._sHeightUnits = sHeightUnits;
-			this._oInitialAttributes = {};
+			this._oInitialAttributes = oInitialAttributes;
 			this._oPredefinedAttributes = this.mergeAttributes(oPredefinedAttributes, this._oInitialAttributes);
-			this._aInitialClasses = [];
+			this._aInitialClasses = aInitialClasses;
 			this._aPredefinedClasses = this.mergeClasses(aPredefinedClasses, this._aInitialClasses);
 			this.renderer = oRenderer;
 		},

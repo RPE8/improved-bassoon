@@ -13,14 +13,15 @@ sap.ui.define(["../../BaseDOMComponent/BaseDOMComponent", "./TableRowRenderer"],
 			sWidthUnits,
 			iHeight,
 			iHeightUnits,
-			oPredefinedAttributes = {},
-			aPredefinedClasses = [],
-		}) {
-			const aInitialClasses = ["Row"];
-			const oIntialAttributes = {
+			oInitialAttributes = {
 				id: sId,
 				style: {},
-			};
+			},
+			aInitialClasses = ["Row"],
+			oPredefinedAttributes = {},
+			aPredefinedClasses = [],
+			oRenderer = Renderer,
+		}) {
 			Component.call(this, {
 				sId,
 				element,
@@ -31,10 +32,9 @@ sap.ui.define(["../../BaseDOMComponent/BaseDOMComponent", "./TableRowRenderer"],
 				iHeightUnits,
 				oPredefinedAttributes,
 				aPredefinedClasses,
-				oRenderer: Renderer,
-				oIntialAttributes,
+				oInitialAttributes,
 				aInitialClasses,
-				oRederer: Renderer,
+				oRenderer: oRenderer,
 			});
 			this._iIndex = iIndex;
 			this._aCells = aCells;

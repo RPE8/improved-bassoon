@@ -19,25 +19,31 @@ sap.ui.define(
 
 			onAfterRendering: function () {
 				setTimeout(() => {
+					let iSpan = 7;
+					let iNestedSpan = 2;
 					for (let i = 0; i < 70; i++) {
 						const aCells = [];
 						aCells.push({
-							text: `Span-${i}`,
-							span: 7,
-						});
-						for (let j = 0; j < 1; j++) {
-							const oProps = {
-								text: `Column-${i}-${j}`,
-							};
-							if (i % 7 === 0) {
-								oProps.span = 2;
-							}
-
-							aCells.push(oProps);
-						}
-						aCells.push({
 							text: `Column-${i}-${1}`,
 						});
+						// const aCells = [];
+						// aCells.push({
+						// 	text: `Span-${i}`,
+						// 	span: iSpan,
+						// });
+						// for (let j = 0; j < 1; j++) {
+						// 	const oProps = {
+						// 		text: `Column-${i}-${j}`,
+						// 	};
+						// 	if (i % 7 === 0) {
+						// 		oProps.span = iNestedSpan;
+						// 	}
+
+						// 	aCells.push(oProps);
+						// }
+						// aCells.push({
+						// 	text: `Column-${i}-${1}`,
+						// });
 						this.byId("test").addColumn2BeCreated({
 							aHeaders: aCells,
 							iWidth: 80,

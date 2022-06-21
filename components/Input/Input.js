@@ -4,13 +4,15 @@ sap.ui.define(["../BaseDOMComponent/BaseDOMComponent", "./InputRenderer"], funct
 	return Component.extend("Input", {
 		constructor: function ({ sId, element, oParent, iWidth, sWidthUnits, iHeight, iHeightUnits, oPredefinedAttributes, aPredefinedClasses }) {
 			const aInitialClasses = ["Input"];
-			const oIntialAttributes = {
-				id: sId,
+			const oInitialAttributes = {
 				style: {
-					width: `${this._iWidth}${this._sWidthUnits}`,
-					"max-width": `${this._iWidth}${this._sWidthUnits}`,
+					width: `${iWidth}${sWidthUnits}`,
+					"max-width": `${iWidth}${sWidthUnits}`,
 				},
 			};
+			if (sId) {
+				oInitialAttributes.id = sId;
+			}
 			Component.call(this, {
 				sId,
 				element,
@@ -22,7 +24,7 @@ sap.ui.define(["../BaseDOMComponent/BaseDOMComponent", "./InputRenderer"], funct
 				oPredefinedAttributes,
 				aPredefinedClasses,
 				oRenderer: Renderer,
-				oIntialAttributes,
+				oInitialAttributes,
 				aInitialClasses,
 				oRederer: Renderer,
 			});

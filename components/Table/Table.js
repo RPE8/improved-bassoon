@@ -338,10 +338,10 @@ sap.ui.define(
 					iIndex: oRowIndexGenerator.next().value,
 				});
 
-				let iColSpan = 0;
+				// let iColSpan = 0;
 				for (let iColumn = 0; iColumn < iColumnsLength; iColumn++) {
 					const oColumn = aColumns[iColumn];
-					const oCell = new TableCell({
+					const oCell = new TableCellTh({
 						// eslint-disable-line
 						sId: oCellIdGenerator.next().value,
 						iIndex: oColumn.getIndex(),
@@ -357,22 +357,22 @@ sap.ui.define(
 
 					const aHeaders = oColumn.getHeadersObjects();
 					const oHeader = aHeaders[iColumn];
-					if (iColSpan > 0) {
-						iColSpan--;
-						continue;
-					}
+					// if (iColSpan > 0) {
+					// 	iColSpan--;
+					// 	continue;
+					// }
 					oThRow.addCell2BeCreated(oCell);
-					iColSpan = oHeader?.span ?? 0;
-					if (oHeader?.span) {
-						// oCell.addPredefinedAttribute(["colspan", oHeader.span]);
-						iColSpan--;
-					}
+					// iColSpan = oHeader?.span ?? 0;
+					// if (oHeader?.span) {
+					// 	// oCell.addPredefinedAttribute(["colspan", oHeader.span]);
+					// 	iColSpan--;
+					// }
 
 					oColumn.addHeaderCell(oCell);
 				}
 
 				aElements.push(oThRow.createFullfiledHTMLRepresentation({}));
-
+				// return aElements;
 				for (let iRow = 0; iRow < iHeadersAmount; iRow++) {
 					const oRow = new TableHeaderRow({
 						sId: oRowIdGenerator.next().value,
@@ -381,7 +381,7 @@ sap.ui.define(
 
 					this.oRows.allRows.push(oRow);
 					this.oRows.headersRows.push(oRow);
-					let iColSpan = 0;
+					// let iColSpan = 0;
 					for (let iColumn = 0; iColumn < iColumnsLength; iColumn++) {
 						const oColumn = aColumns[iColumn];
 						const oCell = new TableCell({
@@ -399,18 +399,18 @@ sap.ui.define(
 						const aHeaders = oColumn.getHeadersObjects();
 						const oHeader = aHeaders[iColumn];
 
-						if (iColSpan > 0) {
-							iColSpan--;
-							continue;
-						}
+						// if (iColSpan > 0) {
+						// 	iColSpan--;
+						// 	continue;
+						// }
 						oRow.addCell2BeCreated(oCell);
-						iColSpan = oHeader?.span ?? 0;
-						if (oHeader?.span) {
-							// oCell.addPredefinedAttribute(["colspan", oHeader.span]);
-							iColSpan--;
-						}
+						// iColSpan = oHeader?.span ?? 0;
+						// if (oHeader?.span) {
+						// 	// oCell.addPredefinedAttribute(["colspan", oHeader.span]);
+						// 	iColSpan--;
+						// }
 
-						oColumn.addHeaderCell(oCell);
+						// oColumn.addHeaderCell(oCell);
 					}
 
 					aElements.push(oRow.createFullfiledHTMLRepresentation({}));
