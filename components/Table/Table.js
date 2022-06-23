@@ -15,7 +15,7 @@ sap.ui.define(
 		return Control.extend("Table", {
 			init: function () {
 				this.aColumns = [];
-				this.iRows = 70;
+				this.iRows = 5;
 				this.iRowHeight = 17;
 				this.iColumns = 70;
 				this.iColumnHeaderRows = 3;
@@ -300,6 +300,10 @@ sap.ui.define(
 				this.$HeaderTable.setAttribute("width", iBodyWidth);
 				this.$HeaderTable.setAttribute("cols", this.aColumns.length ?? 0);
 				this.$TableHeaderBody.replaceChildren(...aHeaderRows);
+				const aDataRows = this.createFulfilledDataPartElements();
+				this.$DataTable.setAttribute("width", iBodyWidth);
+				this.$DataTable.setAttribute("cols", this.aColumns.length ?? 0);
+				this.$TableBody.replaceChildren(...aDataRows);
 				return;
 				const $DataThRow = this.createUtilThRow({ aAdditionalTrClasses: "thRow dataThRow", aAdditionalThClasses: "dataThCell" });
 				const aRows = this.createDataRows();
@@ -339,7 +343,6 @@ sap.ui.define(
 					iHeight: this.iRowHeight,
 				});
 
-				// let iColSpan = 0;
 				for (let iColumn = 0; iColumn < iColumnsLength; iColumn++) {
 					const oColumn = aColumns[iColumn];
 
@@ -357,22 +360,13 @@ sap.ui.define(
 
 					oThRow.addCell(oCell);
 
-					// if (iColSpan > 0) {
-					// 	iColSpan--;
-					// 	continue;
-					// }
 					oThRow.addCell2BeCreated(oCell);
-					// iColSpan = oHeader?.span ?? 0;
-					// if (oHeader?.span) {
-					// 	// oCell.addPredefinedAttribute(["colspan", oHeader.span]);
-					// 	iColSpan--;
-					// }
 
 					oColumn.addHeaderCell(oCell);
 				}
 
 				aElements.push(oThRow.createFullfiledHTMLRepresentation({}));
-				// return aElements;
+
 				for (let iRow = 0; iRow < iHeadersAmount; iRow++) {
 					const oRow = new TableRowHeader({
 						sId: oRowIdGenerator.next().value,
@@ -382,7 +376,7 @@ sap.ui.define(
 
 					this.oRows.allRows.push(oRow);
 					this.oRows.headersRows.push(oRow);
-					// let iColSpan = 0;
+
 					for (let iColumn = 0; iColumn < iColumnsLength; iColumn++) {
 						const oColumn = aColumns[iColumn];
 						const aHeaders = oColumn.getHeadersObjects();
@@ -391,7 +385,6 @@ sap.ui.define(
 							continue;
 						}
 						const oCell = new TableCell({
-							// eslint-disable-line
 							sId: oCellIdGenerator.next().value,
 							iIndex: oColumn.getIndex(),
 							oColumn,
@@ -406,18 +399,7 @@ sap.ui.define(
 						});
 						oRow.addCell(oCell);
 
-						// if (iColSpan > 0) {
-						// 	iColSpan--;
-						// 	continue;
-						// }
 						oRow.addCell2BeCreated(oCell);
-						// iColSpan = oHeader?.span ?? 0;
-						// if (oHeader?.span) {
-						// 	// oCell.addPredefinedAttribute(["colspan", oHeader.span]);
-						// 	iColSpan--;
-						// }
-
-						// oColumn.addHeaderCell(oCell);
 					}
 
 					aElements.push(oRow.createFullfiledHTMLRepresentation({}));
@@ -426,7 +408,82 @@ sap.ui.define(
 				return aElements;
 			},
 
-			createDataPartElement: function () {},
+			createFulfilledDataPartElements: function () {
+				let aElements = [];
+				const aColumns = this.aColumns;
+				const iHeadersAmount = this.iColumnHeaderRows;
+				const oRowIdGenerator = this.getGenerator("rowId");
+				const oRowIndexGenerator = this.getGenerator("rowIndex");
+				const iColumnsLength = aColumns.length;
+				const oCellIdGenerator = this.getGenerator("cellId");
+
+				const oThRow = new TableRowTh({
+					sId: oRowIdGenerator.next().value,
+					iIndex: oRowIndexGenerator.next().value,
+					iHeight: this.iRowHeight,
+				});
+
+				for (let iColumn = 0; iColumn < iColumnsLength; iColumn++) {
+					const oColumn = aColumns[iColumn];
+
+					const oCell = new TableCellTh({
+						// eslint-disable-line
+						sId: oCellIdGenerator.next().value,
+						iIndex: oColumn.getIndex(),
+						oColumn,
+						iRow: oThRow.getIndex(),
+						oThRow,
+						iWidth: oColumn.getWidth(),
+						fnAggregationConstructor: undefined,
+						sWidthUnits: oColumn.getWidthUnit(),
+					});
+
+					oThRow.addCell(oCell);
+
+					oThRow.addCell2BeCreated(oCell);
+
+					oColumn.addHeaderCell(oCell);
+				}
+
+				aElements.push(oThRow.createFullfiledHTMLRepresentation({}));
+
+				for (let iRow = 0; iRow < this.iRows; iRow++) {
+					const oRow = new TableRowHeader({
+						sId: oRowIdGenerator.next().value,
+						iIndex: oRowIndexGenerator.next().value,
+						iHeight: this.iRowHeight,
+					});
+
+					this.oRows.allRows.push(oRow);
+					this.oRows.headersRows.push(oRow);
+
+					for (let iColumn = 0; iColumn < iColumnsLength; iColumn++) {
+						const oColumn = aColumns[iColumn];
+						const aHeaders = oColumn.getHeadersObjects();
+						const oHeader = aHeaders[iRow];
+
+						const oCell = new TableCell({
+							sId: oCellIdGenerator.next().value,
+							iIndex: oColumn.getIndex(),
+							oColumn,
+							iRow: oRow.getIndex(),
+							oRow,
+							iHeight: oRow.getHeight(),
+							sHeightUnits: oRow.getHeightUnits(),
+							iWidth: oColumn.getWidth(),
+							fnAggregationConstructor: oColumn.getAggregationConstructor(),
+							sWidthUnits: oColumn.getWidthUnit(),
+						});
+						oRow.addCell(oCell);
+
+						oRow.addCell2BeCreated(oCell);
+					}
+
+					aElements.push(oRow.createFullfiledHTMLRepresentation({}));
+				}
+
+				return aElements;
+			},
 
 			createHeadersRows: function () {
 				return aTrs;

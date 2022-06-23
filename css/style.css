@@ -4,6 +4,11 @@
 	box-sizing: border-box;
 	overflow-x: auto;
 	border-collapse: collapse;
+}
+
+#TABLE,
+.tableHeader,
+.tableBody {
 	table-layout: fixed;
 }
 
