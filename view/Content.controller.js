@@ -17,52 +17,65 @@ sap.ui.define(
 			 */
 			onInit: function () {},
 
+			createColumns: function () {
+				const aFirstRow = new Array(7).fill(undefined);
+				aFirstRow[0] = {
+					text: `Header-Span-7`,
+					oPredefinedAttributes: {
+						colspan: 7,
+					},
+				};
+
+				const aSecondRow = new Array(7).fill({
+					text: `Header-Span-1`,
+					oPredefinedAttributes: {},
+				});
+				aSecondRow[0] = {
+					text: `Header-Span-2`,
+					oPredefinedAttributes: {
+						colspan: 2,
+					},
+				};
+				aSecondRow[1] = undefined;
+				aSecondRow[5] = {
+					text: `Header-Span-2`,
+					oPredefinedAttributes: {
+						colspan: 2,
+					},
+				};
+				aSecondRow[6] = undefined;
+
+				const aThirdRow = new Array(7).fill({
+					text: `Header-Span-1`,
+					oPredefinedAttributes: {},
+				});
+
+				return [aFirstRow, aSecondRow, aThirdRow];
+			},
+
 			onAfterRendering: function () {
 				setTimeout(() => {
-					let iSpan = 7;
-					let iNestedSpan = 2;
-					for (let i = 0; i < 70; i++) {
-						const aCells = [];
-						aCells.push({
-							text: `Column-${i}-${1}`,
-						});
-						// const aCells = [];
-						// aCells.push({
-						// 	text: `Span-${i}`,
-						// 	span: iSpan,
-						// });
-						// for (let j = 0; j < 1; j++) {
-						// 	const oProps = {
-						// 		text: `Column-${i}-${j}`,
-						// 	};
-						// 	if (i % 7 === 0) {
-						// 		oProps.span = iNestedSpan;
-						// 	}
-
-						// 	aCells.push(oProps);
-						// }
-						// aCells.push({
-						// 	text: `Column-${i}-${1}`,
-						// });
-						this.byId("test").addColumn2BeCreated({
-							aHeaders: aCells,
-							iWidth: 80,
-							sWidthUnits: "px",
-							oAggregationConstructor: Input,
-							fnDataAccessor: function (oData) {
-								return oData["data"][i];
-							},
-						});
+					debugger;
+					for (let i = 0; i < 10; i++) {
+						const aRows = this.createColumns();
+						const iColumn = aRows[0].length;
+						for (let iCell = 0; iCell < iColumn; iCell++) {
+							let aCells = [];
+							for (let iRow = 0; iRow < aRows.length; iRow++) {
+								aCells.push(aRows[iRow][iCell]);
+							}
+							this.byId("test").addColumn2BeCreated({
+								aHeaders: aCells,
+								iWidth: 80,
+								sWidthUnits: "px",
+								oAggregationConstructor: Input,
+								fnDataAccessor: function (oData) {
+									return oData["data"][i];
+								},
+							});
+						}
 					}
 					this.byId("test").createTable();
-
-					// this.byId("test").addColumn2BeCreated({
-					//   aHeaders: [{
-					//     text: "",
-					//   }, {
-					//     text: "Column 2"
-					//   }]
-					// });
 
 					this.byId("test").renderTable();
 				});

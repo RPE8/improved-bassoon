@@ -342,6 +342,7 @@ sap.ui.define(
 				// let iColSpan = 0;
 				for (let iColumn = 0; iColumn < iColumnsLength; iColumn++) {
 					const oColumn = aColumns[iColumn];
+
 					const oCell = new TableCellTh({
 						// eslint-disable-line
 						sId: oCellIdGenerator.next().value,
@@ -356,8 +357,6 @@ sap.ui.define(
 
 					oThRow.addCell(oCell);
 
-					const aHeaders = oColumn.getHeadersObjects();
-					const oHeader = aHeaders[iColumn];
 					// if (iColSpan > 0) {
 					// 	iColSpan--;
 					// 	continue;
@@ -386,11 +385,17 @@ sap.ui.define(
 					// let iColSpan = 0;
 					for (let iColumn = 0; iColumn < iColumnsLength; iColumn++) {
 						const oColumn = aColumns[iColumn];
+						const aHeaders = oColumn.getHeadersObjects();
+						const oHeader = aHeaders[iRow];
+						if (!oHeader) {
+							continue;
+						}
 						const oCell = new TableCell({
 							// eslint-disable-line
 							sId: oCellIdGenerator.next().value,
 							iIndex: oColumn.getIndex(),
 							oColumn,
+							oPredefinedAttributes: oHeader.oPredefinedAttributes,
 							iRow: oRow.getIndex(),
 							oRow,
 							iHeight: oRow.getHeight(),
@@ -400,8 +405,6 @@ sap.ui.define(
 							sWidthUnits: oColumn.getWidthUnit(),
 						});
 						oRow.addCell(oCell);
-						const aHeaders = oColumn.getHeadersObjects();
-						const oHeader = aHeaders[iColumn];
 
 						// if (iColSpan > 0) {
 						// 	iColSpan--;
