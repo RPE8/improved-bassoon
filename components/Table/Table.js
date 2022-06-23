@@ -21,8 +21,10 @@ sap.ui.define(
 				this.iColumns = 70;
 				this.iColumnHeaderRows = 3;
 				// this.oDataMap = new Map();
-				this.iVisibleRowsCount = 30;
+				this.iVisibleRowsCount = Math.min(30, this.iRows);
+
 				this.oDataRowToTableRow = {};
+
 				for (let i = 0; i < this.iVisibleRowsCount; i++) {
 					this.oDataRowToTableRow[i] = i;
 				}
@@ -81,6 +83,8 @@ sap.ui.define(
 					fnCallback ||
 					function (entries) {
 						entries.forEach((entry) => {
+							console.log(entry);
+							return;
 							const target = entry.target;
 							const sId = target.getAttribute("id");
 							const oCell = this.getCellById(sId);
@@ -114,6 +118,8 @@ sap.ui.define(
 					delete oObservers[_sIntersectionObserverPath];
 					return this;
 				};
+
+				oObservers[_sIntersectionObserverPath] = oObserver;
 
 				return oObserver;
 			},
@@ -345,7 +351,6 @@ sap.ui.define(
 				});
 
 				for (let iColumn = 0; iColumn < iColumnsLength; iColumn++) {
-					debugger;
 					const oColumn = aColumns[iColumn];
 					const iWidth = oColumn.getWidth();
 					const iWidthUnits = oColumn.getWidthUnits();
@@ -357,6 +362,7 @@ sap.ui.define(
 						iRow: oThRow.getIndex(),
 						oPredefinedAttributes: {
 							style: {
+								// TODO: Validation
 								width: iWidth + iWidthUnits,
 							},
 						},
@@ -447,6 +453,7 @@ sap.ui.define(
 						iWidth: oColumn.getWidth(),
 						oPredefinedAttributes: {
 							style: {
+								// TODO: Validation
 								width: iWidth + sWidthUnits,
 							},
 						},
@@ -463,6 +470,7 @@ sap.ui.define(
 
 				aElements.push(oThRow.createFullfiledHTMLRepresentation({}));
 
+				const aDataCells = [];
 				for (let iRow = 0; iRow < this.iRows; iRow++) {
 					const oRow = new TableRowHeader({
 						sId: oRowIdGenerator.next().value,
@@ -491,12 +499,14 @@ sap.ui.define(
 							sWidthUnits: oColumn.getWidthUnits(),
 						});
 						oRow.addCell(oCell);
-
+						aDataCells.push(oCell);
 						oRow.addCell2BeCreated(oCell);
 					}
 
 					aElements.push(oRow.createFullfiledHTMLRepresentation({}));
 				}
+				const oObserver = this.getIntersectionObserver();
+				aDataCells.forEach((oCell) => oObserver.observe(oCell.getDomRef()));
 
 				return aElements;
 			},

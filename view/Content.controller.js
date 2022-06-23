@@ -55,7 +55,6 @@ sap.ui.define(
 
 			onAfterRendering: function () {
 				setTimeout(() => {
-					debugger;
 					for (let i = 0; i < 10; i++) {
 						const aRows = this.createColumns();
 						const iColumn = aRows[0].length;
