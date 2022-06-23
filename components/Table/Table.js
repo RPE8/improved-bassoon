@@ -10,8 +10,9 @@ sap.ui.define(
 		"./Cell/TableCell",
 		"./Cell/TableCellTh",
 		"./ScrollBar",
+		"../BaseDOMUtils/BaseDOMUtils",
 	],
-	function (Control, TableRenderer, TableRowHeader, TableRowData, TableRowTh, Column, TableCell, TableCellTh, ScrollBar) {
+	function (Control, TableRenderer, TableRowHeader, TableRowData, TableRowTh, Column, TableCell, TableCellTh, ScrollBar, BaseDOMUtils) {
 		return Control.extend("Table", {
 			init: function () {
 				this.aColumns = [];
@@ -344,18 +345,25 @@ sap.ui.define(
 				});
 
 				for (let iColumn = 0; iColumn < iColumnsLength; iColumn++) {
+					debugger;
 					const oColumn = aColumns[iColumn];
-
+					const iWidth = oColumn.getWidth();
+					const iWidthUnits = oColumn.getWidthUnits();
 					const oCell = new TableCellTh({
 						// eslint-disable-line
 						sId: oCellIdGenerator.next().value,
 						iIndex: oColumn.getIndex(),
 						oColumn,
 						iRow: oThRow.getIndex(),
+						oPredefinedAttributes: {
+							style: {
+								width: iWidth + iWidthUnits,
+							},
+						},
 						oThRow,
-						iWidth: oColumn.getWidth(),
+						iWidth: iWidth,
 						fnAggregationConstructor: undefined,
-						sWidthUnits: oColumn.getWidthUnit(),
+						sWidthUnits: iWidthUnits,
 					});
 
 					oThRow.addCell(oCell);
@@ -384,6 +392,7 @@ sap.ui.define(
 						if (!oHeader) {
 							continue;
 						}
+
 						const oCell = new TableCell({
 							sId: oCellIdGenerator.next().value,
 							iIndex: oColumn.getIndex(),
@@ -395,7 +404,7 @@ sap.ui.define(
 							sHeightUnits: oRow.getHeightUnits(),
 							iWidth: oColumn.getWidth(),
 							fnAggregationConstructor: oColumn.getAggregationConstructor(),
-							sWidthUnits: oColumn.getWidthUnit(),
+							sWidthUnits: oColumn.getWidthUnits(),
 						});
 						oRow.addCell(oCell);
 
@@ -426,6 +435,8 @@ sap.ui.define(
 				for (let iColumn = 0; iColumn < iColumnsLength; iColumn++) {
 					const oColumn = aColumns[iColumn];
 
+					const iWidth = oColumn.getWidth();
+					const sWidthUnits = oColumn.getWidthUnits();
 					const oCell = new TableCellTh({
 						// eslint-disable-line
 						sId: oCellIdGenerator.next().value,
@@ -434,8 +445,13 @@ sap.ui.define(
 						iRow: oThRow.getIndex(),
 						oThRow,
 						iWidth: oColumn.getWidth(),
+						oPredefinedAttributes: {
+							style: {
+								width: iWidth + sWidthUnits,
+							},
+						},
 						fnAggregationConstructor: undefined,
-						sWidthUnits: oColumn.getWidthUnit(),
+						sWidthUnits: oColumn.getWidthUnits(),
 					});
 
 					oThRow.addCell(oCell);
@@ -472,7 +488,7 @@ sap.ui.define(
 							sHeightUnits: oRow.getHeightUnits(),
 							iWidth: oColumn.getWidth(),
 							fnAggregationConstructor: oColumn.getAggregationConstructor(),
-							sWidthUnits: oColumn.getWidthUnit(),
+							sWidthUnits: oColumn.getWidthUnits(),
 						});
 						oRow.addCell(oCell);
 
@@ -521,7 +537,7 @@ sap.ui.define(
 						iRow: undefined,
 						oRowTh,
 						iWidth: oColumn.getWidth(),
-						sWidthUnits: oColumn.getWidthUnit(),
+						sWidthUnits: oColumn.getWidthUnits(),
 					});
 					oRowTh.addCell(oCell);
 
@@ -531,7 +547,7 @@ sap.ui.define(
 						[
 							["id", sCellId],
 							// ["width", oColumn.getWidth()],
-							["style", `width:${oColumn.getWidth()}${oColumn.getWidthUnit()};max-width:${oColumn.getWidth()}${oColumn.getWidthUnit()};`],
+							["style", `width:${oColumn.getWidth()}${oColumn.getWidthUnits()};max-width:${oColumn.getWidth()}${oColumn.getWidthUnits()};`],
 						]
 					);
 					this.mCellsById.set(sCellId, oCell);
@@ -578,7 +594,7 @@ sap.ui.define(
 							oRow,
 							iWidth: oColumn.getWidth(),
 							fnAggregationConstructor: oColumn.getAggregationConstructor(),
-							sWidthUnits: oColumn.getWidthUnit(),
+							sWidthUnits: oColumn.getWidthUnits(),
 						});
 						oRow.addCell(oCell);
 
