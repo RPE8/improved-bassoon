@@ -87,6 +87,7 @@ sap.ui.define(
 							const $target = entry.target;
 							const sId = $target.getAttribute("id");
 							const oCell = this.getCellById(sId);
+							debugger;
 							return;
 							const iRow = oCell.getRowIndex();
 							const iDataRow = this.oDataRowToTableRow[iRow];
@@ -350,6 +351,8 @@ sap.ui.define(
 					iHeight: this.iRowHeight,
 				});
 
+				this.oRows.headersThRows.push(oThRow);
+
 				this.mRowsById.set(sThRowId, oThRow);
 
 				for (let iColumn = 0; iColumn < iColumnsLength; iColumn++) {
@@ -394,9 +397,8 @@ sap.ui.define(
 						iHeight: this.iRowHeight,
 					});
 
-					this.mRowsById.set(sRowId, oRow);
-					this.oRows.allRows.push(oRow);
 					this.oRows.headersRows.push(oRow);
+					this.mRowsById.set(sRowId, oRow);
 
 					for (let iColumn = 0; iColumn < iColumnsLength; iColumn++) {
 						const oColumn = aColumns[iColumn];
@@ -449,6 +451,7 @@ sap.ui.define(
 					iHeight: this.iRowHeight,
 				});
 
+				this.oRows.dataThRows.push(oThRow);
 				this.mRowsById.set(sThRowId, oThRow);
 
 				for (let iColumn = 0; iColumn < iColumnsLength; iColumn++) {
@@ -489,16 +492,15 @@ sap.ui.define(
 				const aDataCells = [];
 				for (let iRow = 0; iRow < this.iRows; iRow++) {
 					const sRowId = oRowIdGenerator.next().value;
+
 					const oRow = new TableRowHeader({
 						sId: sRowId,
 						iIndex: oRowIndexGenerator.next().value,
 						iHeight: this.iRowHeight,
 					});
 
+					this.oRows.dataRows.push(oThRow);
 					this.mRowsById.set(sRowId, oRow);
-
-					this.oRows.allRows.push(oRow);
-					this.oRows.headersRows.push(oRow);
 
 					for (let iColumn = 0; iColumn < iColumnsLength; iColumn++) {
 						const oColumn = aColumns[iColumn];
