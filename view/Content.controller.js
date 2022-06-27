@@ -55,6 +55,7 @@ sap.ui.define(
 
 			onAfterRendering: function () {
 				setTimeout(() => {
+					let iMassCounter = 0;
 					for (let i = 0; i < 10; i++) {
 						const iDataIndex = i;
 						const aRows = this.createColumns();
@@ -64,13 +65,14 @@ sap.ui.define(
 							for (let iRow = 0; iRow < aRows.length; iRow++) {
 								aCells.push(aRows[iRow][iCell]);
 							}
+							const iIndex = ++iMassCounter;
 							this.byId("test").addColumn2BeCreated({
 								aHeaders: aCells,
 								iWidth: 80,
 								sWidthUnits: "px",
 								oAggregationConstructor: Input,
 								fnDataGetter: function (oData) {
-									return oData["data"][iDataIndex];
+									return oData["data"][iIndex];
 								},
 								fnDataSetter: function (vData) {
 									// oData["data"][iDataIndex] = vData;
