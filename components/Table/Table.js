@@ -84,10 +84,10 @@ sap.ui.define(
 					function (entries) {
 						entries.forEach((entry) => {
 							console.log(entry);
-							return;
-							const target = entry.target;
-							const sId = target.getAttribute("id");
+							const $target = entry.target;
+							const sId = $target.getAttribute("id");
 							const oCell = this.getCellById(sId);
+							return;
 							const iRow = oCell.getRowIndex();
 							const iDataRow = this.oDataRowToTableRow[iRow];
 							const sValue = oCell.getColumn().getDataAccessor()(this.aData[iDataRow]);
@@ -343,20 +343,23 @@ sap.ui.define(
 				const oRowIndexGenerator = this.getGenerator("rowIndex");
 				const iColumnsLength = aColumns.length;
 				const oCellIdGenerator = this.getGenerator("cellId");
-
+				const sThRowId = oRowIdGenerator.next().value;
 				const oThRow = new TableRowTh({
-					sId: oRowIdGenerator.next().value,
+					sId: sThRowId,
 					iIndex: oRowIndexGenerator.next().value,
 					iHeight: this.iRowHeight,
 				});
+
+				this.mRowsById.set(sThRowId, oThRow);
 
 				for (let iColumn = 0; iColumn < iColumnsLength; iColumn++) {
 					const oColumn = aColumns[iColumn];
 					const iWidth = oColumn.getWidth();
 					const iWidthUnits = oColumn.getWidthUnits();
+					const sCellId = oCellIdGenerator.next().value;
 					const oCell = new TableCellTh({
 						// eslint-disable-line
-						sId: oCellIdGenerator.next().value,
+						sId: sCellId,
 						iIndex: oColumn.getIndex(),
 						oColumn,
 						iRow: oThRow.getIndex(),
@@ -377,17 +380,21 @@ sap.ui.define(
 					oThRow.addCell2BeCreated(oCell);
 
 					oColumn.addHeaderCell(oCell);
+
+					this.mCellsById.set(sCellId, oCell);
 				}
 
 				aElements.push(oThRow.createFullfiledHTMLRepresentation({}));
 
 				for (let iRow = 0; iRow < iHeadersAmount; iRow++) {
+					const sRowId = oRowIdGenerator.next().value;
 					const oRow = new TableRowHeader({
-						sId: oRowIdGenerator.next().value,
+						sId: sRowId,
 						iIndex: oRowIndexGenerator.next().value,
 						iHeight: this.iRowHeight,
 					});
 
+					this.mRowsById.set(sRowId, oRow);
 					this.oRows.allRows.push(oRow);
 					this.oRows.headersRows.push(oRow);
 
@@ -399,8 +406,10 @@ sap.ui.define(
 							continue;
 						}
 
+						const sCellId = oCellIdGenerator.next().value;
+
 						const oCell = new TableCell({
-							sId: oCellIdGenerator.next().value,
+							sId: sCellId,
 							iIndex: oColumn.getIndex(),
 							oColumn,
 							oPredefinedAttributes: oHeader.oPredefinedAttributes,
@@ -415,6 +424,8 @@ sap.ui.define(
 						oRow.addCell(oCell);
 
 						oRow.addCell2BeCreated(oCell);
+
+						this.mCellsById.set(sCellId, oCell);
 					}
 
 					aElements.push(oRow.createFullfiledHTMLRepresentation({}));
@@ -431,21 +442,24 @@ sap.ui.define(
 				const oRowIndexGenerator = this.getGenerator("rowIndex");
 				const iColumnsLength = aColumns.length;
 				const oCellIdGenerator = this.getGenerator("cellId");
-
+				const sThRowId = oRowIdGenerator.next().value;
 				const oThRow = new TableRowTh({
-					sId: oRowIdGenerator.next().value,
+					sId: sThRowId,
 					iIndex: oRowIndexGenerator.next().value,
 					iHeight: this.iRowHeight,
 				});
+
+				this.mRowsById.set(sThRowId, oThRow);
 
 				for (let iColumn = 0; iColumn < iColumnsLength; iColumn++) {
 					const oColumn = aColumns[iColumn];
 
 					const iWidth = oColumn.getWidth();
 					const sWidthUnits = oColumn.getWidthUnits();
+					const sCellId = oCellIdGenerator.next().value;
 					const oCell = new TableCellTh({
 						// eslint-disable-line
-						sId: oCellIdGenerator.next().value,
+						sId: sCellId,
 						iIndex: oColumn.getIndex(),
 						oColumn,
 						iRow: oThRow.getIndex(),
@@ -461,6 +475,8 @@ sap.ui.define(
 						sWidthUnits: oColumn.getWidthUnits(),
 					});
 
+					this.mCellsById.set(sCellId, oCell);
+
 					oThRow.addCell(oCell);
 
 					oThRow.addCell2BeCreated(oCell);
@@ -472,11 +488,14 @@ sap.ui.define(
 
 				const aDataCells = [];
 				for (let iRow = 0; iRow < this.iRows; iRow++) {
+					const sRowId = oRowIdGenerator.next().value;
 					const oRow = new TableRowHeader({
-						sId: oRowIdGenerator.next().value,
+						sId: sRowId,
 						iIndex: oRowIndexGenerator.next().value,
 						iHeight: this.iRowHeight,
 					});
+
+					this.mRowsById.set(sRowId, oRow);
 
 					this.oRows.allRows.push(oRow);
 					this.oRows.headersRows.push(oRow);
@@ -485,9 +504,9 @@ sap.ui.define(
 						const oColumn = aColumns[iColumn];
 						const aHeaders = oColumn.getHeadersObjects();
 						const oHeader = aHeaders[iRow];
-
+						const sCellId = oCellIdGenerator.next().value;
 						const oCell = new TableCell({
-							sId: oCellIdGenerator.next().value,
+							sId: sCellId,
 							iIndex: oColumn.getIndex(),
 							oColumn,
 							iRow: oRow.getIndex(),
@@ -498,6 +517,9 @@ sap.ui.define(
 							fnAggregationConstructor: oColumn.getAggregationConstructor(),
 							sWidthUnits: oColumn.getWidthUnits(),
 						});
+
+						this.mCellsById.set(sCellId, oCell);
+
 						oRow.addCell(oCell);
 						aDataCells.push(oCell);
 						oRow.addCell2BeCreated(oCell);
