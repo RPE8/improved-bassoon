@@ -87,6 +87,8 @@ sap.ui.define(
 							const iRow = oRow.getIndex();
 							const iDataRow = this.oDataRowToTableRow[iRow];
 							const sValue = oCell.getColumn().getDataGetter()(this.aData[iDataRow]);
+							oCell.getAggregation().updateValue({ vNewValue: sValue });
+							debugger;
 							return;
 							if (oCell.getDisplayedValue() !== sValue) {
 								oCell.setDisplayedValue(sValue, true);

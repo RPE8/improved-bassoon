@@ -94,6 +94,7 @@ sap.ui.define(["../../BaseDOMComponent/BaseDOMComponent", "../../BaseDOMUtils/Ba
 			sAggregationAttributesAction = "MERGE",
 			sAttributesAction = "MERGE",
 			bAssignToAggregation = true,
+			bAssignAggregationsDom = true,
 		}) {
 			const $element = this.createStandaloneHTMLRepresentation({
 				bAssignToDomRef,
@@ -109,6 +110,7 @@ sap.ui.define(["../../BaseDOMComponent/BaseDOMComponent", "../../BaseDOMUtils/Ba
 			const $aggregation = oAggregation?.createStandaloneHTMLRepresentation({ oAttributes: oAggregationAttributes, sAttributesAction: sAggregationAttributesAction });
 			if ($aggregation) {
 				const aAttributes = [];
+				if (bAssignAggregationsDom) oAggregation.setDomRef($aggregation);
 				if (this.getHeight() !== undefined) {
 					let sHeight = `${this.getHeight()}${this.getHeightUnits() ?? ""}`;
 					aAttributes.push(["style", `height:${sHeight}`]);
