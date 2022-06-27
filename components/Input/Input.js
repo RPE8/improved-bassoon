@@ -2,7 +2,7 @@
 // eslint-disable-next-line no-undef
 sap.ui.define(["../BaseDOMComponent/BaseDOMComponent", "../BaseDOMUtils/BaseDOMUtils", "./InputRenderer"], function (Component, DOMUtils, Renderer) {
 	return Component.extend("Input", {
-		constructor: function ({ sId, element, oParent, iWidth, sWidthUnits, iHeight, fnDataGetter, fnDataSetter, iHeightUnits, oPredefinedAttributes = {}, aPredefinedClasses = [] }) {
+		constructor: function ({ sId, element, oParent, iWidth, sWidthUnits, iHeight, iHeightUnits, oPredefinedAttributes = {}, aPredefinedClasses = [] }) {
 			aPredefinedClasses = DOMUtils.mergeClasses(aPredefinedClasses, ["Input", "BasicInput"]);
 
 			Component.call(this, {
@@ -22,26 +22,6 @@ sap.ui.define(["../BaseDOMComponent/BaseDOMComponent", "../BaseDOMUtils/BaseDOMU
 				displayedValue: "",
 				underhoodValue: "",
 			};
-			this.fnDataGetter = fnDataGetter;
-			this.fnDataSetter = fnDataSetter;
-		},
-
-		getDataSetter: function () {
-			return this.fnDataSetter;
-		},
-
-		setDataSetter: function (fnValue) {
-			this.fnDataSetter = fnValue;
-			return this;
-		},
-
-		getDataGetter: function () {
-			return this.fnDataGetter;
-		},
-
-		setDataGetter: function (fnValue) {
-			this.fnDataGetter = fnValue;
-			return this;
 		},
 
 		getValues: function () {

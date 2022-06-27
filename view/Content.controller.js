@@ -56,6 +56,7 @@ sap.ui.define(
 			onAfterRendering: function () {
 				setTimeout(() => {
 					for (let i = 0; i < 10; i++) {
+						const iDataIndex = i;
 						const aRows = this.createColumns();
 						const iColumn = aRows[0].length;
 						for (let iCell = 0; iCell < iColumn; iCell++) {
@@ -68,11 +69,11 @@ sap.ui.define(
 								iWidth: 80,
 								sWidthUnits: "px",
 								oAggregationConstructor: Input,
-								fnDataAccessor: function (oData) {
-									return oData["data"][i];
+								fnDataGetter: function (oData) {
+									return oData["data"][iDataIndex];
 								},
-								fnDataSetter: function (oData) {
-									this.setValueByType("displayedValue", oData["data"][i]);
+								fnDataSetter: function (vData) {
+									// oData["data"][iDataIndex] = vData;
 									return this;
 								},
 							});

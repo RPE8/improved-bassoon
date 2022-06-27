@@ -2,7 +2,7 @@
 // eslint-disable-next-line no-undef
 sap.ui.define(["sap/ui/base/Object"], function (Object) {
 	return Object.extend("Column", {
-		constructor: function ({ sId, aClasses = [], iIndex, iColumn, aHeaders, fnDataAccessor, iWidth, sWidthUnits, fnAggregationConstructor }) {
+		constructor: function ({ sId, aClasses = [], iIndex, iColumn, aHeaders, fnDataGetter, fnDataSetter, iWidth, sWidthUnits, fnAggregationConstructor }) {
 			this._sId = sId;
 			this._iIndex = iIndex;
 			this._aClasses = aClasses;
@@ -13,7 +13,8 @@ sap.ui.define(["sap/ui/base/Object"], function (Object) {
 				headerTh: [],
 				dataTh: [],
 			};
-			this._fnDataAccessor = fnDataAccessor;
+			this._fnDataGetter = fnDataGetter;
+			this._fnDataSetter = fnDataSetter;
 			this._iColumn = iColumn;
 			this._iWidth = iWidth;
 			this._sWidthUnits = sWidthUnits;
@@ -93,13 +94,22 @@ sap.ui.define(["sap/ui/base/Object"], function (Object) {
 			return this;
 		},
 
-		setDataAccessor: function (fnAccessor) {
-			this._fnDataAccessor = fnAccessor;
+		setDataGetter: function (fnValue) {
+			this._fnDataGetter = fnValue;
 			return this;
 		},
 
-		getDataAccessor: function () {
-			return this._fnDataAccessor;
+		getDataGetter: function () {
+			return this._fnDataGetter;
+		},
+
+		setDataSetter: function (fnValue) {
+			this._fnDataSetter = fnValue;
+			return this;
+		},
+
+		getDataSetter: function () {
+			return this._fnDataSetter;
 		},
 
 		setWidth: function (iValue) {

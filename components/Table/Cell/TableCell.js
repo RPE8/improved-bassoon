@@ -44,30 +44,6 @@ sap.ui.define(["../../BaseDOMComponent/BaseDOMComponent", "../../BaseDOMUtils/Ba
 			this._oAggregation = undefined;
 		},
 
-		getDisplayedValue: function () {
-			return this.getDomRef().innerHTML;
-		},
-
-		setDisplayedValue: function (vValue, bUpdateUnderhoodValue) {
-			return;
-			// this.getDomRef().innerHTML = vValue;
-			// if (bUpdateUnderhoodValue) {
-			// 	this.setUnderhoodValue(vValue, false);
-			// }
-		},
-
-		getUnderhoodValue: function () {
-			return this._vValue;
-		},
-
-		setUnderhoodValue: function (vValue, bUpdateDisplayedValue) {
-			return;
-			// this._vValue = vValue;
-			// if (bUpdateDisplayedValue) {
-			// 	this.setDisplayedValue(vValue, false);
-			// }
-		},
-
 		getColumn: function () {
 			return this._oColumn;
 		},

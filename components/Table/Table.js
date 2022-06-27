@@ -16,7 +16,7 @@ sap.ui.define(
 		return Control.extend("Table", {
 			init: function () {
 				this.aColumns = [];
-				this.iRows = 5;
+				this.iRows = 35;
 				this.iRowHeight = 17;
 				this.iColumns = 70;
 				this.iColumnHeaderRows = 3;
@@ -25,11 +25,7 @@ sap.ui.define(
 
 				this.oDataRowToTableRow = {};
 
-				for (let i = 0; i < this.iVisibleRowsCount; i++) {
-					this.oDataRowToTableRow[i] = i;
-				}
-				this.iCurrentFirstRow = 0;
-				this.iCurrentLastRow = this.iVisibleRowsCount - 1;
+				this.iDataRowsStartIndex = null;
 
 				this.oObservers = this.initObservers();
 				this.oRows = this.initRows();
@@ -87,12 +83,11 @@ sap.ui.define(
 							const $target = entry.target;
 							const sId = $target.getAttribute("id");
 							const oCell = this.getCellById(sId);
-							debugger;
-							return;
-							const iRow = oCell.getRowIndex();
+							const oRow = oCell.getRow();
+							const iRow = oRow.getIndex();
 							const iDataRow = this.oDataRowToTableRow[iRow];
-							const sValue = oCell.getColumn().getDataAccessor()(this.aData[iDataRow]);
-
+							const sValue = oCell.getColumn().getDataGetter()(this.aData[iDataRow]);
+							return;
 							if (oCell.getDisplayedValue() !== sValue) {
 								oCell.setDisplayedValue(sValue, true);
 							}
@@ -271,7 +266,8 @@ sap.ui.define(
 					iIndex: oIndexGenerator.next().value,
 					aHeaders: oColumn.aHeaders,
 					sDataPath: oColumn.sDataPath,
-					fnDataAccessor: oColumn.fnDataAccessor,
+					fnDataGetter: oColumn.fnDataGetter,
+					fnDataSetter: oColumn.fnDataSetter,
 					iWidth: oColumn.iWidth,
 					sWidthUnits: oColumn.sWidthUnits,
 					fnAggregationConstructor: oColumn.oAggregationConstructor,
@@ -287,6 +283,8 @@ sap.ui.define(
 				this.oObservers = this.initObservers();
 				this.mCellsById?.clear();
 				this.mRowsById?.clear();
+				this.iDataRowsStartIndex = null;
+				this.oDataRowToTableRow = {};
 			},
 
 			// Rerender whole table
@@ -312,6 +310,13 @@ sap.ui.define(
 				this.$DataTable.setAttribute("width", iBodyWidth);
 				this.$DataTable.setAttribute("cols", this.aColumns.length ?? 0);
 				this.$TableBody.replaceChildren(...aDataRows);
+				this.iVisibleRowsCount = this.oRows.dataRows.length;
+				if (this.iDataRowsStartIndex >= 0) {
+					for (let i = 0; i < this.iVisibleRowsCount; i++) {
+						this.oDataRowToTableRow[i + this.iDataRowsStartIndex] = i;
+					}
+				}
+
 				return;
 				const $DataThRow = this.createUtilThRow({ aAdditionalTrClasses: "thRow dataThRow", aAdditionalThClasses: "dataThCell" });
 				const aRows = this.createDataRows();
@@ -492,10 +497,12 @@ sap.ui.define(
 				const aDataCells = [];
 				for (let iRow = 0; iRow < this.iRows; iRow++) {
 					const sRowId = oRowIdGenerator.next().value;
+					const iRowIndex = oRowIndexGenerator.next().value;
 
+					if (this.iDataRowsStartIndex === null) this.iDataRowsStartIndex = iRowIndex;
 					const oRow = new TableRowHeader({
 						sId: sRowId,
-						iIndex: oRowIndexGenerator.next().value,
+						iIndex: iRowIndex,
 						iHeight: this.iRowHeight,
 					});
 
