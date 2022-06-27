@@ -16,7 +16,6 @@ sap.ui.define(["../BaseDOMComponent/BaseDOMComponent", "../BaseDOMUtils/BaseDOMU
 				oPredefinedAttributes,
 				aPredefinedClasses,
 				oRenderer: Renderer,
-				oRederer: Renderer,
 			});
 
 			this._oValues = {
