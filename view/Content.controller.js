@@ -71,6 +71,10 @@ sap.ui.define(
 								fnDataAccessor: function (oData) {
 									return oData["data"][i];
 								},
+								fnDataSetter: function (oData) {
+									this.setValueByType("displayedValue", oData["data"][i]);
+									return this;
+								},
 							});
 						}
 					}
