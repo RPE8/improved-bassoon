@@ -74,7 +74,7 @@ sap.ui.define(["../Renderer/Renderer"], function (Renderer) {
 			verticalBar: $VerticalScrollBar,
 			verticalBarScrollContainer: $VerticalScrollDiv,
 			horizontalBar: $HorizontalScrollBar,
-			horizontalBarContainer: $HorizontalScrollDiv,
+			horizontalBarScrollContainer: $HorizontalScrollDiv,
 		};
 	};
 

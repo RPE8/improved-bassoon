@@ -19,7 +19,13 @@ sap.ui.define(
 				this.iRows = 35;
 				this.iRowHeight = 17;
 				this.iColumns = 70;
-				this.iColumnHeaderRows = 3;
+
+				this.iHeaderRowsAmount = 0;
+				this.iHeaderRowsThAmount = 0;
+
+				this.iDataRowsAmount = 0;
+				this.iDataRowsThAmount = 0;
+
 				// this.oDataMap = new Map();
 				this.iVisibleRowsCount = Math.min(30, this.iRows);
 				// Row Index to Data Index
@@ -29,6 +35,7 @@ sap.ui.define(
 
 				this.oObservers = this.initObservers();
 				this.oRows = this.initRows();
+				this.oRowsAmount = this.initRowsAmount();
 				this.mCellsById = new Map();
 				this.mRowsById = new Map();
 
@@ -41,6 +48,9 @@ sap.ui.define(
 				this.oGenerators = this.initGenerators(sTableId);
 
 				this.aColumns2BeCreated = [];
+
+				this.oVerticalScrollbar = null;
+				this.oHorizontalScrollbar = null;
 			},
 
 			initGenerators(sId) {
@@ -134,6 +144,18 @@ sap.ui.define(
 				};
 
 				return oRows;
+			},
+
+			initRowsAmount: function () {
+				const oRowsAmount = {
+					dataRows: 0,
+					headersRows: 0,
+					allRows: 0,
+					headersThRows: 0,
+					dataThRows: 0,
+				};
+
+				return oRowsAmount;
 			},
 
 			createData() {
@@ -273,6 +295,7 @@ sap.ui.define(
 			clearTable: function () {
 				this.destroyIntersectionObserver?.();
 				this.oRows = this.initRows();
+				this.oRowsAmount = this.initRowsAmount();
 				this.oGenerators = this.initGenerators(this.getId());
 				this.oObservers = this.initObservers();
 				this.mCellsById?.clear();
@@ -290,10 +313,8 @@ sap.ui.define(
 					root: this.$TableBodyScrollContainer,
 					fnCallback: this._intersectionObserverCallback,
 				});
+				const { aElements: aHeaderRows } = this.createFulfilledHeadersPartElements();
 
-				const aHeaderRows = this.createFulfilledHeadersPartElements();
-				console.log(aHeaderRows);
-				// return;
 				let iBodyWidth = 0;
 				if (this.aColumns && this.aColumns.length) {
 					this.aColumns.forEach((oColumn) => (iBodyWidth += oColumn.getWidth()));
@@ -305,45 +326,28 @@ sap.ui.define(
 				this.$DataTable.setAttribute("width", iBodyWidth);
 				this.$DataTable.setAttribute("cols", this.aColumns.length ?? 0);
 				this.$TableBody.replaceChildren(...aDataRows);
+
 				if (this.iDataRowsStartIndex >= 0) {
 					for (let i = 0; i < this.iVisibleRowsCount; i++) {
 						this.oDataRowToTableRow[i + this.iDataRowsStartIndex] = i;
 					}
 				}
-
-				return;
-				const $DataThRow = this.createUtilThRow({ aAdditionalTrClasses: "thRow dataThRow", aAdditionalThClasses: "dataThCell" });
-				const aRows = this.createDataRows();
-				// this.$TableBody.setAttribute("width", iBodyWidth);
-				this.$DataTable.setAttribute("width", iBodyWidth);
-				this.$DataTable.setAttribute("cols", this.aColumns.length ?? 0);
-				this.$TableBody.replaceChildren($DataThRow, ...aRows);
-
-				const oRect = this.$TableBodyScrollContainer.getBoundingClientRect();
-				this.iTableBodyScrollContainerWidth = oRect.width;
-				this.iTableBodyScrollContainerHeight = oRect.height;
-
-				// TODO; Dynamic height of rows
-				this.$HorizontalScrollBar.setAttribute("style", `width: ${(this.iTableBodyScrollContainerWidth * 100) / iBodyWidth}%`);
-				this.$VerticalScrollBar.setAttribute("style", `height: ${(this.iVisibleRowsCount * this.iRowHeight * 100) / (this.iRows * this.iRowHeight)}%`);
-
-				console.log(this.aColumns);
-				console.log(this.aRows);
-				console.log(this.aHeaderRows);
-				console.log(this.aDataRows);
-				console.log(this.mRowsById);
-				console.log(this.mCellsById);
 			},
 
 			createFulfilledHeadersPartElements: function () {
 				let aElements = [];
+
 				const aColumns = this.aColumns;
-				const iHeadersAmount = this.iColumnHeaderRows;
 				const oRowIdGenerator = this.getGenerator("rowId");
 				const oRowIndexGenerator = this.getGenerator("rowIndex");
 				const iColumnsLength = aColumns.length;
 				const oCellIdGenerator = this.getGenerator("cellId");
 				const sThRowId = oRowIdGenerator.next().value;
+				const iHeadersAmount = aColumns?.[0]?.getHeadersObjects()?.length || 0;
+
+				this.setRowsAmountByType("headersThRows", 1);
+				this.setRowsAmountByType("headersRows", iHeadersAmount);
+
 				const oThRow = new TableRowTh({
 					sId: sThRowId,
 					iIndex: oRowIndexGenerator.next().value,
@@ -432,18 +436,21 @@ sap.ui.define(
 					aElements.push(oRow.createFullfiledHTMLRepresentation({}));
 				}
 
-				return aElements;
+				return { aElements };
 			},
 
 			createFulfilledDataPartElements: function () {
 				let aElements = [];
 				const aColumns = this.aColumns;
-				const iHeadersAmount = this.iColumnHeaderRows;
 				const oRowIdGenerator = this.getGenerator("rowId");
 				const oRowIndexGenerator = this.getGenerator("rowIndex");
 				const iColumnsLength = aColumns.length;
 				const oCellIdGenerator = this.getGenerator("cellId");
 				const sThRowId = oRowIdGenerator.next().value;
+
+				this.setRowsAmountByType("dataThRows", 1);
+				this.setRowsAmountByType("dataRows", this.iVisibleRowsCount);
+
 				const oThRow = new TableRowTh({
 					sId: sThRowId,
 					iIndex: oRowIndexGenerator.next().value,
@@ -574,6 +581,9 @@ sap.ui.define(
 				this.$DataTable = table;
 				this.$HeaderTable = headerTable;
 
+				horizontalBarScrollContainer.classList.add("invisible");
+				verticalBarScrollContainer.classList.add("invisible");
+
 				const oVerticalScrollbar = (this.oVerticalScrollbar = new ScrollBar({
 					bVertical: true,
 					BarContainerDomRef: verticalBarScrollContainer,
@@ -654,11 +664,6 @@ sap.ui.define(
 				return this.iVisibleRowsCount;
 			},
 
-			setUtilRows: function (oValue) {
-				this._oUtilRows = oValue;
-				return this;
-			},
-
 			getRows: function () {
 				return this.oRows;
 			},
@@ -668,21 +673,49 @@ sap.ui.define(
 				return this;
 			},
 
-			addRows: function (sName, aData) {
-				if (!this.oRows[sName]) {
-					this.oRows[sName] = [];
+			addRowsByType: function (sType, aData) {
+				if (!this.oRows[sType]) {
+					this.oRows[sType] = [];
 				}
-				this.oRows[sName] = [...this.oRows[sName], ...aData];
+				this.oRows[sType] = [...this.oRows[sType], ...aData];
 				return this;
 			},
 
-			removeRows: function (sName) {
-				delete this.oRows[sName];
+			removeRowsByType: function (sType) {
+				delete this.oRows[sType];
 				return this;
 			},
 
 			clearRows: function () {
 				this.oRows = {};
+				return this;
+			},
+
+			getRowsAmount: function () {
+				return this.oRowsAmount;
+			},
+
+			setRowsAmount: function (oData) {
+				this.oRowsAmount = oData;
+				return this;
+			},
+
+			setRowsAmountByType: function (sType, iValue) {
+				if (!this.oRowsAmount[sType]) {
+					this.oRowsAmount[sType] = null;
+				}
+
+				this.oRowsAmount[sType] = iValue;
+				return this;
+			},
+
+			removeRowsAmountByType: function (sType) {
+				delete this.oRowsAmount[sType];
+				return this;
+			},
+
+			clearRowsAmount: function () {
+				this.oRowsAmount = {};
 				return this;
 			},
 
@@ -735,6 +768,24 @@ sap.ui.define(
 
 			clearGenerator: function () {
 				this.oGenerators = {};
+				return this;
+			},
+
+			getVerticalScrollBar: function () {
+				return this.oVerticalScrollbar;
+			},
+
+			setVerticalScrollBar: function (oValue) {
+				this.oVerticalScrollbar = oValue;
+				return this;
+			},
+
+			getHorizontalScrollBar: function () {
+				return this.oHorizontalScrollbar;
+			},
+
+			setHorizontalScrollBar: function (oValue) {
+				this.oHorizontalScrollbar = oValue;
 				return this;
 			},
 
