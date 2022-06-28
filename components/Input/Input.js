@@ -38,7 +38,11 @@ sap.ui.define(
 
 			setValueByType: function (sType, vValue) {
 				if (!(sType in this._oValues)) {
-					this._oValues[sType] = null;
+					return;
+				}
+
+				if (vValue === this.getValueByType(sType)) {
+					return;
 				}
 
 				if (sType === "displayedValue") {
