@@ -18,6 +18,7 @@ sap.ui.define(
 				this.aColumns = [];
 				this.iRows = 35;
 				this.iRowHeight = 17;
+				this.sRowHeightUnits = "px";
 				this.iColumns = 70;
 
 				this.iHeaderRowsAmount = 0;
@@ -352,6 +353,7 @@ sap.ui.define(
 					sId: sThRowId,
 					iIndex: oRowIndexGenerator.next().value,
 					iHeight: this.iRowHeight,
+					sHeightUnits: this.iRowHeightUnits,
 				});
 
 				this.oRows.headersThRows.push(oThRow);
@@ -398,6 +400,7 @@ sap.ui.define(
 						sId: sRowId,
 						iIndex: oRowIndexGenerator.next().value,
 						iHeight: this.iRowHeight,
+						sHeightUnits: this.iRowHeightUnits,
 					});
 
 					this.oRows.headersRows.push(oRow);
@@ -455,6 +458,7 @@ sap.ui.define(
 					sId: sThRowId,
 					iIndex: oRowIndexGenerator.next().value,
 					iHeight: this.iRowHeight,
+					sHeightUnits: this.iRowHeightUnits,
 				});
 
 				this.oRows.dataThRows.push(oThRow);
@@ -505,6 +509,7 @@ sap.ui.define(
 						sId: sRowId,
 						iIndex: iRowIndex,
 						iHeight: this.iRowHeight,
+						sHeightUnits: this.iRowHeightUnits,
 					});
 
 					this.oRows.dataRows.push(oRow);
@@ -787,6 +792,23 @@ sap.ui.define(
 			setHorizontalScrollBar: function (oValue) {
 				this.oHorizontalScrollbar = oValue;
 				return this;
+			},
+
+			setRowHeight: function (iValue) {
+				this.iRowHeight = iValue;
+			},
+
+			getRowHeight: function () {
+				return this.iRowHeight;
+			},
+
+			setRowHeightUnits: function (sValue) {
+				this.sRowHeightUnits = sValue;
+				return this;
+			},
+
+			getRowHeightUnits: function () {
+				return this.sRowHeightUnits;
 			},
 
 			isInViewport: (element) => {
