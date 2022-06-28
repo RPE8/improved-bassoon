@@ -22,7 +22,7 @@ sap.ui.define(
 				this.iColumnHeaderRows = 3;
 				// this.oDataMap = new Map();
 				this.iVisibleRowsCount = Math.min(30, this.iRows);
-
+				// Row Index to Data Index
 				this.oDataRowToTableRow = {};
 
 				this.iDataRowsStartIndex = null;
@@ -87,8 +87,6 @@ sap.ui.define(
 			},
 
 			_intersectionObserverCallback: function (aEntries) {
-				debugger;
-
 				aEntries.forEach((entry) => {
 					const $target = entry.target;
 					this._update$CellAggregationByDataRow2TableRow($target);
@@ -157,9 +155,9 @@ sap.ui.define(
 				return this.aData;
 			},
 
-			_reassigneRowsDataAccordingToDataRow2TableRow() {
+			_updateRowsDataAccordingToDataRow2TableRow() {
 				let iBorderWidth = 0;
-				let iLastTdIndex = null;
+				let iLastCellIndex = null;
 				for (let i = 0; i < this.iVisibleRowsCount; i++) {
 					console.time("row");
 					const oRow = this.oRows.dataRows[i];
@@ -168,27 +166,21 @@ sap.ui.define(
 
 					const iLength = aCells.length;
 					for (let j = 0; j < iLength; j++) {
-						const oTd = aCells[j];
+						const oCell = aCells[j];
 
-						if (iLastTdIndex === null) {
+						// Optimizaton part
+						if (iLastCellIndex === null) {
 							if (this.iTableBodyScrollContainerWidth < iBorderWidth) {
-								iLastTdIndex = j;
+								iLastCellIndex = j;
 								break;
 							}
 
-							iBorderWidth += oTd.getWidth();
-						} else if (iLastTdIndex === j) {
+							iBorderWidth += oCell.getWidth();
+						} else if (iLastCellIndex === j) {
 							break;
 						}
 
-						const iRow = oTd.getIndex();
-
-						const iDataRow = this.oDataRowToTableRow[iRow];
-						const sValue = oTd.getColumn().getDataAccessor()(this.aData[iDataRow]);
-
-						if (oTd.getDisplayedValue() !== sValue) {
-							oTd.setDisplayedValue(sValue, true);
-						}
+						this._updateCellAggregationByDataRow2TableRow(oCell);
 					}
 					console.timeEnd("row");
 				}
@@ -196,38 +188,35 @@ sap.ui.define(
 
 			onWheelHandler: function (oEvent) {
 				const aKeys = Object.keys(this.oDataRowToTableRow);
+				const aValues = Object.values(this.oDataRowToTableRow);
 
 				if (oEvent.deltaY < 0) {
-					if (this.iCurrentFirstRow <= 0) {
+					if (aValues[0] <= 0) {
 						return;
 					}
 
-					this.iCurrentFirstRow--;
-					this.iCurrentLastRow--;
-
-					for (let sRowId in Object.keys(this.oDataRowToTableRow)) {
-						this.oDataRowToTableRow[sRowId] = this.oDataRowToTableRow[sRowId] - 1;
+					for (let sRowId in aKeys) {
+						const iRowIdExtended = Number(sRowId) + this.iDataRowsStartIndex;
+						this.oDataRowToTableRow[iRowIdExtended] = this.oDataRowToTableRow[iRowIdExtended] - 1;
 					}
 					const [iTop] = this.$VerticalScrollBar.style.top.split("%");
 					this.$VerticalScrollBar.style.top = `${(+iTop ?? 0) - 100 / this.iRows}%`;
 
-					this._reassigneRowsDataAccordingToDataRow2TableRow();
+					this._updateRowsDataAccordingToDataRow2TableRow();
 				} else if (oEvent.deltaY > 0) {
-					if (this.iCurrentLastRow >= this.aData.length - 1) {
+					if (aValues[aValues.length - 1] >= this.aData.length - 1) {
 						return;
 					}
 
-					this.iCurrentFirstRow++;
-					this.iCurrentLastRow++;
-
 					for (let sRowId in aKeys) {
-						this.oDataRowToTableRow[sRowId] = this.oDataRowToTableRow[sRowId] + 1;
+						const iRowIdExtended = Number(sRowId) + this.iDataRowsStartIndex;
+						this.oDataRowToTableRow[iRowIdExtended] = this.oDataRowToTableRow[iRowIdExtended] + 1;
 					}
 
 					const [iTop] = this.$VerticalScrollBar.style.top.split("%");
 					this.$VerticalScrollBar.style.top = `${(+iTop ?? 0) + 100 / this.iRows}%`;
 
-					this._reassigneRowsDataAccordingToDataRow2TableRow();
+					this._updateRowsDataAccordingToDataRow2TableRow();
 				}
 
 				// this.$VerticalScrollBar.style.top = `${this.iRows * (this.oDataRowToTableRow[aKeys.length - 1] - this.iVisibleRowsCount) / 100}%`;
@@ -316,7 +305,6 @@ sap.ui.define(
 				this.$DataTable.setAttribute("width", iBodyWidth);
 				this.$DataTable.setAttribute("cols", this.aColumns.length ?? 0);
 				this.$TableBody.replaceChildren(...aDataRows);
-				this.iVisibleRowsCount = this.oRows.dataRows.length;
 				if (this.iDataRowsStartIndex >= 0) {
 					for (let i = 0; i < this.iVisibleRowsCount; i++) {
 						this.oDataRowToTableRow[i + this.iDataRowsStartIndex] = i;
@@ -501,7 +489,7 @@ sap.ui.define(
 				aElements.push(oThRow.createFullfiledHTMLRepresentation({}));
 
 				const aDataCells = [];
-				for (let iRow = 0; iRow < this.iRows; iRow++) {
+				for (let iRow = 0; iRow < this.iVisibleRowsCount; iRow++) {
 					const sRowId = oRowIdGenerator.next().value;
 					const iRowIndex = oRowIndexGenerator.next().value;
 
