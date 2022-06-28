@@ -72,29 +72,33 @@ sap.ui.define(
 				return oObservers;
 			},
 
+			_update$CellAggregationByDataRow2TableRow: function ($cell) {
+				const sId = $cell.getAttribute("id");
+				const oCell = this.getCellById(sId);
+				this._updateCellAggregationByDataRow2TableRow(oCell);
+			},
+
+			_updateCellAggregationByDataRow2TableRow: function (oCell) {
+				const oRow = oCell.getRow();
+				const iRow = oRow.getIndex();
+				const iDataRow = this.oDataRowToTableRow[iRow];
+				const sValue = oCell.getColumn().getDataGetter()(this.aData[iDataRow]);
+				oCell.updateAggregation({ vNewValue: sValue });
+			},
+
+			_intersectionObserverCallback: function (aEntries) {
+				debugger;
+
+				aEntries.forEach((entry) => {
+					const $target = entry.target;
+					this._update$CellAggregationByDataRow2TableRow($target);
+				});
+			},
+
 			_initDataPartIntersectionObserver({ oObservers, $root, fnCallback }) {
 				const _sIntersectionObserverPath = "dataPartIntersection";
 
-				fnCallback =
-					fnCallback ||
-					function (entries) {
-						entries.forEach((entry) => {
-							console.log(entry);
-							const $target = entry.target;
-							const sId = $target.getAttribute("id");
-							const oCell = this.getCellById(sId);
-							const oRow = oCell.getRow();
-							const iRow = oRow.getIndex();
-							const iDataRow = this.oDataRowToTableRow[iRow];
-							const sValue = oCell.getColumn().getDataGetter()(this.aData[iDataRow]);
-							oCell.updateAggregation({ vNewValue: sValue });
-							debugger;
-							return;
-							if (oCell.getDisplayedValue() !== sValue) {
-								oCell.setDisplayedValue(sValue, true);
-							}
-						});
-					}.bind(this);
+				fnCallback = fnCallback.bind(this) || function () {};
 
 				const oObserver = new IntersectionObserver(fnCallback, {
 					root: $root,
@@ -156,10 +160,9 @@ sap.ui.define(
 			_reassigneRowsDataAccordingToDataRow2TableRow() {
 				let iBorderWidth = 0;
 				let iLastTdIndex = null;
-
 				for (let i = 0; i < this.iVisibleRowsCount; i++) {
 					console.time("row");
-					const oRow = this.aDataRows[i];
+					const oRow = this.oRows.dataRows[i];
 
 					const aCells = oRow.getCells();
 
@@ -178,7 +181,7 @@ sap.ui.define(
 							break;
 						}
 
-						const iRow = oTd.getRowIndex();
+						const iRow = oTd.getIndex();
 
 						const iDataRow = this.oDataRowToTableRow[iRow];
 						const sValue = oTd.getColumn().getDataAccessor()(this.aData[iDataRow]);
@@ -296,6 +299,7 @@ sap.ui.define(
 				const oDataPartIntersectionObserver = this._initDataPartIntersectionObserver({
 					oObservers: this.getObservers(),
 					root: this.$TableBodyScrollContainer,
+					fnCallback: this._intersectionObserverCallback,
 				});
 
 				const aHeaderRows = this.createFulfilledHeadersPartElements();
@@ -508,7 +512,7 @@ sap.ui.define(
 						iHeight: this.iRowHeight,
 					});
 
-					this.oRows.dataRows.push(oThRow);
+					this.oRows.dataRows.push(oRow);
 					this.mRowsById.set(sRowId, oRow);
 
 					for (let iColumn = 0; iColumn < iColumnsLength; iColumn++) {
