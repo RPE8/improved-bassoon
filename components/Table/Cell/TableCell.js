@@ -71,6 +71,15 @@ sap.ui.define(["../../BaseDOMComponent/BaseDOMComponent", "../../BaseDOMUtils/Ba
 			return this;
 		},
 
+		updateAggregation: function (oParameters) {
+			const oAggregation = this.getAggregation();
+			if (!oAggregation) {
+				return;
+			}
+
+			oAggregation.updateValue(oParameters);
+		},
+
 		initAggregation: function (fnAggregationConstructor = this._fnAggregationConstructor, bForce) {
 			if (!fnAggregationConstructor) {
 				return;
