@@ -16,7 +16,7 @@ sap.ui.define(
 		return Control.extend("Table", {
 			init: function () {
 				this.aColumns = [];
-				this._iDataRowsCount = 35;
+				this._iDataRowsAmount = 35;
 				this._iRowHeight = 30;
 				this._sRowHeightUnits = "px";
 				this.iColumns = 70;
@@ -28,7 +28,7 @@ sap.ui.define(
 				this.iDataRowsThAmount = 0;
 
 				// this.oDataMap = new Map();
-				this.iVisibleRowsCount = Math.min(30, this._iDataRowsCount);
+				this.iVisibleRowsCount = Math.min(30, this._iDataRowsAmount);
 				// Row Index to Data Index
 				this.oDataRowToTableRow = {};
 
@@ -161,7 +161,7 @@ sap.ui.define(
 
 			createData() {
 				const aData = [];
-				for (let i = 0; i < this._iDataRowsCount; i++) {
+				for (let i = 0; i < this._iDataRowsAmount; i++) {
 					const aRow = [];
 					for (let j = 0; j < this.iColumns; j++) {
 						// this.oDataMap.set(`${i}:${j}`, `${i}:${j}`);
@@ -223,7 +223,7 @@ sap.ui.define(
 						this.oDataRowToTableRow[iRowIdExtended] = this.oDataRowToTableRow[iRowIdExtended] - 1;
 					}
 					const [iTop] = this.$VerticalScrollBar.style.top.split("%");
-					this.$VerticalScrollBar.style.top = `${(+iTop ?? 0) - 100 / this._iDataRowsCount}%`;
+					this.$VerticalScrollBar.style.top = `${(+iTop ?? 0) - 100 / this._iDataRowsAmount}%`;
 
 					this._updateRowsDataAccordingToDataRow2TableRow();
 				} else if (oEvent.deltaY > 0) {
@@ -237,12 +237,12 @@ sap.ui.define(
 					}
 
 					const [iTop] = this.$VerticalScrollBar.style.top.split("%");
-					this.$VerticalScrollBar.style.top = `${(+iTop ?? 0) + 100 / this._iDataRowsCount}%`;
+					this.$VerticalScrollBar.style.top = `${(+iTop ?? 0) + 100 / this._iDataRowsAmount}%`;
 
 					this._updateRowsDataAccordingToDataRow2TableRow();
 				}
 
-				// this.$VerticalScrollBar.style.top = `${this._iDataRowsCount * (this.oDataRowToTableRow[aKeys.length - 1] - this.iVisibleRowsCount) / 100}%`;
+				// this.$VerticalScrollBar.style.top = `${this._iDataRowsAmount * (this.oDataRowToTableRow[aKeys.length - 1] - this.iVisibleRowsCount) / 100}%`;
 			},
 
 			simulateMouseWheel: function (bUp) {
@@ -812,12 +812,12 @@ sap.ui.define(
 			},
 
 			setDataRowsCount: function (iValue) {
-				this._iDataRowsCount = iValue;
+				this._iDataRowsAmount = iValue;
 				return this;
 			},
 
 			getDataRowsCount: function () {
-				return this._iDataRowsCount;
+				return this._iDataRowsAmount;
 			},
 
 			isInViewport: (element) => {
