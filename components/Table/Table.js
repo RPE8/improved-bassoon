@@ -16,10 +16,10 @@ sap.ui.define(
 		return Control.extend("Table", {
 			init: function () {
 				this.aColumns = [];
-				this._iDataRowsAmount = 35;
-				this._iRowHeight = 30;
+				this._iDataRowsAmount = 0;
+				this._iRowHeight = 0;
 				this._sRowHeightUnits = "px";
-				this._iColumnsAmount = 70;
+				this._iColumnsAmount = 700;
 
 				this.iHeaderRowsAmount = 0;
 				this.iHeaderRowsThAmount = 0;
@@ -28,7 +28,7 @@ sap.ui.define(
 				this.iDataRowsThAmount = 0;
 
 				// this.oDataMap = new Map();
-				this.iVisibleRowsCount = Math.min(30, this._iDataRowsAmount);
+				this._iVisibleRowsAmount = 0;
 				// Row Index to Data Index
 				this.oDataRowToTableRow = {};
 
@@ -170,7 +170,6 @@ sap.ui.define(
 
 					aData.push({ data: aRow });
 				}
-
 				return aData;
 			},
 
@@ -181,7 +180,7 @@ sap.ui.define(
 			_updateRowsDataAccordingToDataRow2TableRow() {
 				let iBorderWidth = 0;
 				let iLastCellIndex = null;
-				for (let i = 0; i < this.iVisibleRowsCount; i++) {
+				for (let i = 0; i < this._iVisibleRowsAmount; i++) {
 					console.time("row");
 					const oRow = this.oRows.dataRows[i];
 
@@ -242,7 +241,7 @@ sap.ui.define(
 					this._updateRowsDataAccordingToDataRow2TableRow();
 				}
 
-				// this.$VerticalScrollBar.style.top = `${this._iDataRowsAmount * (this.oDataRowToTableRow[aKeys.length - 1] - this.iVisibleRowsCount) / 100}%`;
+				// this.$VerticalScrollBar.style.top = `${this._iDataRowsAmount * (this.oDataRowToTableRow[aKeys.length - 1] - this._iVisibleRowsAmount) / 100}%`;
 			},
 
 			simulateMouseWheel: function (bUp) {
@@ -308,6 +307,7 @@ sap.ui.define(
 			// Rerender table contetn
 			renderTableContent: function () {
 				this.clearTable();
+				this._iVisibleRowsAmount = Math.min(this._iVisibleRowsAmount, this._iDataRowsAmount);
 
 				const oDataPartIntersectionObserver = this._initDataPartIntersectionObserver({
 					oObservers: this.getObservers(),
@@ -329,7 +329,7 @@ sap.ui.define(
 				this.$TableBody.replaceChildren(...aDataRows);
 
 				if (this.iDataRowsStartIndex >= 0) {
-					for (let i = 0; i < this.iVisibleRowsCount; i++) {
+					for (let i = 0; i < this._iVisibleRowsAmount; i++) {
 						this.oDataRowToTableRow[i + this.iDataRowsStartIndex] = i;
 					}
 				}
@@ -452,7 +452,7 @@ sap.ui.define(
 				const sThRowId = oRowIdGenerator.next().value;
 
 				this.setRowsAmountByType("dataThRows", 1);
-				this.setRowsAmountByType("dataRows", this.iVisibleRowsCount);
+				this.setRowsAmountByType("dataRows", this._iVisibleRowsAmount);
 
 				const oThRow = new TableRowTh({
 					sId: sThRowId,
@@ -500,7 +500,7 @@ sap.ui.define(
 				aElements.push(oThRow.createFullfiledHTMLRepresentation({}));
 
 				const aDataCells = [];
-				for (let iRow = 0; iRow < this.iVisibleRowsCount; iRow++) {
+				for (let iRow = 0; iRow < this._iVisibleRowsAmount; iRow++) {
 					const sRowId = oRowIdGenerator.next().value;
 					const iRowIndex = oRowIndexGenerator.next().value;
 
@@ -672,7 +672,12 @@ sap.ui.define(
 			},
 
 			getVisibleRows() {
-				return this.iVisibleRowsCount;
+				return this._iVisibleRowsAmount;
+			},
+
+			setVisibleRows(iValue) {
+				this._iVisibleRowsAmount = iValue;
+				return this;
 			},
 
 			getRows: function () {

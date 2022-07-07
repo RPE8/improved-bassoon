@@ -88,6 +88,7 @@ sap.ui.define(
 					oTable.setRowHeight(15);
 					oTable.setRowHeightUnits("px");
 					oTable.setDataRowsCount(70);
+					oTable.setVisibleRows(20);
 					oTable.setColumnsAmount(iColumns);
 					console.log(iColumns);
 					oTable.aData = oTable.createData();
