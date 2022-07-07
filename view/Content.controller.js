@@ -57,9 +57,11 @@ sap.ui.define(
 				setTimeout(() => {
 					const oTable = this.byId("test");
 					let iMassCounter = 0;
-					for (let i = 0; i < 10; i++) {
+					let iColumns = 0;
+					for (let i = 0; i < 100; i++) {
 						const iDataIndex = i;
 						const aRows = this.createColumns();
+
 						const iColumn = aRows[0].length;
 						for (let iCell = 0; iCell < iColumn; iCell++) {
 							let aCells = [];
@@ -80,11 +82,14 @@ sap.ui.define(
 									return this;
 								},
 							});
+							iColumns++;
 						}
 					}
 					oTable.setRowHeight(15);
 					oTable.setRowHeightUnits("px");
 					oTable.setDataRowsCount(70);
+					oTable.setColumnsAmount(iColumns);
+					console.log(iColumns);
 					oTable.aData = oTable.createData();
 					oTable.createTableDOMStructure();
 					oTable.renderTableContent();

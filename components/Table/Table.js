@@ -19,7 +19,7 @@ sap.ui.define(
 				this._iDataRowsAmount = 35;
 				this._iRowHeight = 30;
 				this._sRowHeightUnits = "px";
-				this.iColumns = 70;
+				this._iColumnsAmount = 70;
 
 				this.iHeaderRowsAmount = 0;
 				this.iHeaderRowsThAmount = 0;
@@ -163,7 +163,7 @@ sap.ui.define(
 				const aData = [];
 				for (let i = 0; i < this._iDataRowsAmount; i++) {
 					const aRow = [];
-					for (let j = 0; j < this.iColumns; j++) {
+					for (let j = 0; j < this._iColumnsAmount; j++) {
 						// this.oDataMap.set(`${i}:${j}`, `${i}:${j}`);
 						aRow.push(`${i}:${j}`);
 					}
@@ -661,8 +661,13 @@ sap.ui.define(
 				return this.iColumnHeaderRows;
 			},
 
-			getColumnsCount() {
-				return this.iColumns;
+			getColumnsAmount() {
+				return this._iColumnsAmount;
+			},
+
+			setColumnsAmount(iValue) {
+				this._iColumnsAmount = iValue;
+				return this;
 			},
 
 			getVisibleRows() {
