@@ -17,8 +17,8 @@ sap.ui.define(
 			init: function () {
 				this.aColumns = [];
 				this.iRows = 35;
-				this.iRowHeight = 30;
-				this.sRowHeightUnits = "px";
+				this._iRowHeight = 30;
+				this._sRowHeightUnits = "px";
 				this.iColumns = 70;
 
 				this.iHeaderRowsAmount = 0;
@@ -352,8 +352,8 @@ sap.ui.define(
 				const oThRow = new TableRowTh({
 					sId: sThRowId,
 					iIndex: oRowIndexGenerator.next().value,
-					iHeight: this.iRowHeight,
-					sHeightUnits: this.iRowHeightUnits,
+					iHeight: this._iRowHeight,
+					sHeightUnits: this._sRowHeightUnits,
 				});
 
 				this.oRows.headersThRows.push(oThRow);
@@ -399,8 +399,8 @@ sap.ui.define(
 					const oRow = new TableRowHeader({
 						sId: sRowId,
 						iIndex: oRowIndexGenerator.next().value,
-						iHeight: this.iRowHeight,
-						sHeightUnits: this.iRowHeightUnits,
+						iHeight: this._iRowHeight,
+						sHeightUnits: this._sRowHeightUnits,
 					});
 
 					this.oRows.headersRows.push(oRow);
@@ -457,8 +457,8 @@ sap.ui.define(
 				const oThRow = new TableRowTh({
 					sId: sThRowId,
 					iIndex: oRowIndexGenerator.next().value,
-					iHeight: this.iRowHeight,
-					sHeightUnits: this.iRowHeightUnits,
+					iHeight: this._iRowHeight,
+					sHeightUnits: this._sRowHeightUnits,
 				});
 
 				this.oRows.dataThRows.push(oThRow);
@@ -508,8 +508,8 @@ sap.ui.define(
 					const oRow = new TableRowHeader({
 						sId: sRowId,
 						iIndex: iRowIndex,
-						iHeight: this.iRowHeight,
-						sHeightUnits: this.iRowHeightUnits,
+						iHeight: this._iRowHeight,
+						sHeightUnits: this._sRowHeightUnits,
 					});
 
 					this.oRows.dataRows.push(oRow);
@@ -795,20 +795,20 @@ sap.ui.define(
 			},
 
 			setRowHeight: function (iValue) {
-				this.iRowHeight = iValue;
+				this._iRowHeight = iValue;
 			},
 
 			getRowHeight: function () {
-				return this.iRowHeight;
+				return this._iRowHeight;
 			},
 
 			setRowHeightUnits: function (sValue) {
-				this.sRowHeightUnits = sValue;
+				this._sRowHeightUnits = sValue;
 				return this;
 			},
 
 			getRowHeightUnits: function () {
-				return this.sRowHeightUnits;
+				return this._sRowHeightUnits;
 			},
 
 			isInViewport: (element) => {
