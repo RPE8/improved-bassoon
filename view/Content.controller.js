@@ -84,6 +84,8 @@ sap.ui.define(
 					}
 					oTable.setRowHeight(15);
 					oTable.setRowHeightUnits("px");
+					oTable.setDataRowsCount(70);
+					oTable.aData = oTable.createData();
 					oTable.createTableDOMStructure();
 					oTable.renderTableContent();
 				});

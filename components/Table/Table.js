@@ -16,7 +16,7 @@ sap.ui.define(
 		return Control.extend("Table", {
 			init: function () {
 				this.aColumns = [];
-				this.iRows = 35;
+				this._iDataRowsCount = 35;
 				this._iRowHeight = 30;
 				this._sRowHeightUnits = "px";
 				this.iColumns = 70;
@@ -28,7 +28,7 @@ sap.ui.define(
 				this.iDataRowsThAmount = 0;
 
 				// this.oDataMap = new Map();
-				this.iVisibleRowsCount = Math.min(30, this.iRows);
+				this.iVisibleRowsCount = Math.min(30, this._iDataRowsCount);
 				// Row Index to Data Index
 				this.oDataRowToTableRow = {};
 
@@ -43,7 +43,7 @@ sap.ui.define(
 				this.verticalSBTop = 0;
 				this.horizontalSBLeft = 0;
 
-				this.aData = this.createData();
+				this.aData = [];
 
 				const sTableId = this.getId();
 				this.oGenerators = this.initGenerators(sTableId);
@@ -161,7 +161,7 @@ sap.ui.define(
 
 			createData() {
 				const aData = [];
-				for (let i = 0; i < this.iRows; i++) {
+				for (let i = 0; i < this._iDataRowsCount; i++) {
 					const aRow = [];
 					for (let j = 0; j < this.iColumns; j++) {
 						// this.oDataMap.set(`${i}:${j}`, `${i}:${j}`);
@@ -223,7 +223,7 @@ sap.ui.define(
 						this.oDataRowToTableRow[iRowIdExtended] = this.oDataRowToTableRow[iRowIdExtended] - 1;
 					}
 					const [iTop] = this.$VerticalScrollBar.style.top.split("%");
-					this.$VerticalScrollBar.style.top = `${(+iTop ?? 0) - 100 / this.iRows}%`;
+					this.$VerticalScrollBar.style.top = `${(+iTop ?? 0) - 100 / this._iDataRowsCount}%`;
 
 					this._updateRowsDataAccordingToDataRow2TableRow();
 				} else if (oEvent.deltaY > 0) {
@@ -237,12 +237,12 @@ sap.ui.define(
 					}
 
 					const [iTop] = this.$VerticalScrollBar.style.top.split("%");
-					this.$VerticalScrollBar.style.top = `${(+iTop ?? 0) + 100 / this.iRows}%`;
+					this.$VerticalScrollBar.style.top = `${(+iTop ?? 0) + 100 / this._iDataRowsCount}%`;
 
 					this._updateRowsDataAccordingToDataRow2TableRow();
 				}
 
-				// this.$VerticalScrollBar.style.top = `${this.iRows * (this.oDataRowToTableRow[aKeys.length - 1] - this.iVisibleRowsCount) / 100}%`;
+				// this.$VerticalScrollBar.style.top = `${this._iDataRowsCount * (this.oDataRowToTableRow[aKeys.length - 1] - this.iVisibleRowsCount) / 100}%`;
 			},
 
 			simulateMouseWheel: function (bUp) {
@@ -809,6 +809,15 @@ sap.ui.define(
 
 			getRowHeightUnits: function () {
 				return this._sRowHeightUnits;
+			},
+
+			setDataRowsCount: function (iValue) {
+				this._iDataRowsCount = iValue;
+				return this;
+			},
+
+			getDataRowsCount: function () {
+				return this._iDataRowsCount;
 			},
 
 			isInViewport: (element) => {
