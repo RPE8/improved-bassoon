@@ -55,6 +55,7 @@ sap.ui.define(
 
 			onAfterRendering: function () {
 				setTimeout(() => {
+					const oTable = this.byId("test");
 					let iMassCounter = 0;
 					for (let i = 0; i < 10; i++) {
 						const iDataIndex = i;
@@ -66,7 +67,7 @@ sap.ui.define(
 								aCells.push(aRows[iRow][iCell]);
 							}
 							const iIndex = ++iMassCounter;
-							this.byId("test").addColumn2BeCreated({
+							oTable.addColumn2BeCreated({
 								aHeaders: aCells,
 								iWidth: 80,
 								sWidthUnits: "px",
@@ -81,9 +82,10 @@ sap.ui.define(
 							});
 						}
 					}
-					this.byId("test").createTable();
-
-					this.byId("test").renderTable();
+					oTable.setRowHeight(15);
+					oTable.setRowHeightUnits("px");
+					oTable.createTableDOMStructure();
+					oTable.renderTableContent();
 				});
 			},
 		});

@@ -17,7 +17,7 @@ sap.ui.define(
 			init: function () {
 				this.aColumns = [];
 				this.iRows = 35;
-				this.iRowHeight = 17;
+				this.iRowHeight = 30;
 				this.sRowHeightUnits = "px";
 				this.iColumns = 70;
 
@@ -305,8 +305,8 @@ sap.ui.define(
 				this.oDataRowToTableRow = {};
 			},
 
-			// Rerender whole table
-			renderTable: function () {
+			// Rerender table contetn
+			renderTableContent: function () {
 				this.clearTable();
 
 				const oDataPartIntersectionObserver = this._initDataPartIntersectionObserver({
@@ -548,7 +548,7 @@ sap.ui.define(
 				return aElements;
 			},
 
-			createTable() {
+			createTableDOMStructure() {
 				const $TABLE = (this.$TABLE = document.getElementById("TABLE"));
 
 				const onYMouseMove = (this.onYScrollMouseMove = (oEvent) => {
