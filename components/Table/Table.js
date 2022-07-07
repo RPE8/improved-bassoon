@@ -581,6 +581,7 @@ sap.ui.define(
 				$TABLE.addEventListener("wheel", onWheelHandler);
 
 				this.$TableBodyScrollContainer = bodyScrollContainer;
+				this.iTableBodyScrollContainerWidth = this.$TableBodyScrollContainer.clientWidth;
 				this.$TableHeaderBody = headerTBody;
 				this.$TableBody = bodyTBody;
 				this.$DataTable = table;
