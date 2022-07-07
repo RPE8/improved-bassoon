@@ -58,7 +58,7 @@ sap.ui.define(
 					const oTable = this.byId("test");
 					let iMassCounter = 0;
 					let iColumns = 0;
-					for (let i = 0; i < 100; i++) {
+					for (let i = 0; i < 700; i++) {
 						const iDataIndex = i;
 						const aRows = this.createColumns();
 

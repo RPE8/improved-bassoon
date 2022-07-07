@@ -178,10 +178,10 @@ sap.ui.define(
 			},
 
 			_updateRowsDataAccordingToDataRow2TableRow() {
-				let iBorderWidth = 0;
 				let iLastCellIndex = null;
 				for (let i = 0; i < this._iVisibleRowsAmount; i++) {
 					console.time("row");
+					let iBorderWidth = 0;
 					const oRow = this.oRows.dataRows[i];
 
 					const aCells = oRow.getCells();
