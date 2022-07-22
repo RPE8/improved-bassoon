@@ -586,56 +586,6 @@ sap.ui.define(
 				this.$TableBody = bodyTBody;
 				this.$DataTable = table;
 				this.$HeaderTable = headerTable;
-
-				horizontalBarScrollContainer.classList.add("invisible");
-				verticalBarScrollContainer.classList.add("invisible");
-
-				const oVerticalScrollbar = (this.oVerticalScrollbar = new ScrollBar({
-					bVertical: true,
-					BarContainerDomRef: verticalBarScrollContainer,
-					BarDomRef: verticalBar,
-				}));
-
-				const oVerticalBar = oVerticalScrollbar.getBarDomRef();
-
-				const oHorizontalScrollbar = (this.oHorizontalScrollbar = new ScrollBar({
-					bHorizontal: true,
-					BarContainerDomRef: horizontalBarScrollContainer,
-					BarDomRef: horizontalBar,
-				}));
-
-				const oHorizontalBar = oHorizontalScrollbar.getBarDomRef();
-
-				this.$VerticalScrollBar = verticalBar;
-				this.$HorizontalScrollBar = horizontalBar;
-
-				if (this._fnCurrVScrollBarMouseDownHandler) {
-					this.$VerticalScrollBar.removeEventListener("mousedown", this._fnCurrVScrollBarMouseDownHandler);
-				}
-
-				if (this._fnCurrVScrollBarMouseUpHandler) {
-					this.$VerticalScrollBar.removeEventListener("mouseup", this._fnCurrVScrollBarMouseUpHandler);
-				}
-
-				const onMouseUp = (this._fnCurrVScrollBarMouseUpHandler = (oEvent, oEvent2) => {
-					this._bScroll = false;
-					$TABLE.removeEventListener("mousemove", onYMouseMove);
-					$TABLE.removeEventListener("mouseup", onMouseUp);
-					this.onScrollBarMouseUpHandler(oEvent, oEvent2);
-				});
-
-				const onMouseDown = (this._fnCurrVScrollBarMouseDownHandler = (oEvent, oEvent2) => {
-					this._bScroll = true;
-					$TABLE.addEventListener("mousemove", onYMouseMove);
-					$TABLE.addEventListener("mouseup", onMouseUp);
-					this.onScrollBarMouseDownHandler(oEvent, oEvent2);
-				});
-
-				oVerticalBar.addEventListener("mousedown", onMouseDown);
-				oVerticalBar.addEventListener("mouseup", onMouseUp);
-				// const oColumn = new Column({
-				//   sId: this.oIdColumnsGenerator.next().value
-				// });
 			},
 
 			getCellById: function (sId) {

@@ -39,12 +39,6 @@ sap.ui.define(["../Renderer/Renderer"], function (Renderer) {
 
 		const $TableBodyContainer = this.createElement("div", ["tableBodyWrapper"]);
 		const $TableBodyScrollContainer = this.createElement("div", ["tableBodyScrollWrapper"]);
-
-		const $VerticalScrollDiv = this.createElement("div", ["scroll", "verticalScroll"]);
-		const $VerticalScrollBar = this.createElement("div", ["scrollBar", "verticalScrollBar"]);
-		const $HorizontalScrollDiv = this.createElement("div", ["scroll", "horizontalScroll"]);
-		const $HorizontalScrollBar = this.createElement("div", ["scrollBar", "horizontalScrollBar"]);
-		const $TableBodyScrollContainerContent = this.createElement("div");
 		const $TableBody = this.createElement("table", ["bodyTableBody", "tableBody"]);
 		const $TBody = this.createElement("tbody");
 
@@ -54,13 +48,7 @@ sap.ui.define(["../Renderer/Renderer"], function (Renderer) {
 		$TableHeaderContainer.appendChild($TableHeader);
 		$TableContainer.appendChild($TableHeaderContainer);
 
-		$TableBodyScrollContainerContent.appendChild($TableBody);
-		$TableBodyScrollContainer.appendChild($TableBodyScrollContainerContent);
-		// $TableBodyScrollContainer.appendChild($TableBody);
-		$VerticalScrollDiv.appendChild($VerticalScrollBar);
-		$HorizontalScrollDiv.appendChild($HorizontalScrollBar);
-		$TableBodyScrollContainer.appendChild($VerticalScrollDiv);
-		$TableBodyScrollContainer.appendChild($HorizontalScrollDiv);
+		$TableBodyScrollContainer.appendChild($TableBody);
 		$TableBodyContainer.appendChild($TableBodyScrollContainer);
 
 		$TableContainer.appendChild($TableBodyContainer);
@@ -71,10 +59,6 @@ sap.ui.define(["../Renderer/Renderer"], function (Renderer) {
 			bodyTBody: $TBody,
 			headerTBody: $TableHeaderBody,
 			bodyScrollContainer: $TableBodyScrollContainer,
-			verticalBar: $VerticalScrollBar,
-			verticalBarScrollContainer: $VerticalScrollDiv,
-			horizontalBar: $HorizontalScrollBar,
-			horizontalBarScrollContainer: $HorizontalScrollDiv,
 		};
 	};
 
